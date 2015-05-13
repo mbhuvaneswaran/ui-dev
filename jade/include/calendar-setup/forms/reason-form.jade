@@ -1,0 +1,37 @@
+form#editor-form(name='editorReasonForm' novalidate='')
+  div.card-content
+    div.panel.error.has-icon(ng-if='formData.submissionError.length > 0')
+      i.ki.attention 
+      span {{formData.submissionError}}
+
+    input.hidden.hide(ng-model="formData.id")
+    input.hidden.hide(ng-model='formData.colorpicker')
+
+    div.input-group(ng-class='{"error":formData.inputError && editorReasonForm.name.$error.required}')
+      label Name
+      input.editor-focus-target#editor-form-input-name(type='text' placeholder="Name" name='name' ng-model="formData.name" required='' maxlength='30')
+      p.error-message(ng-show='formData.inputError && editorReasonForm.name.$error.required') Please enter a name.
+
+    div.input-group(ng-class='{"error":formData.inputError && editorReasonForm.duration.$error.required}')
+      label Duration
+      input.xsmall#editor-form-input-duration(type='text' valid-integer required value="45" name='duration' ng-model="formData.duration" integer-min='1' integer-max='1440')
+      span.mls ({{durationUnits}})
+      p.error-message(ng-show='formData.inputError && editorReasonForm.duration.$error.required') Please enter a number for the duration.
+
+    div.input-group(ng-class='{"error":formData.inputError && editorReasonForm.color.$error.required}')
+      label Color
+      button.colorbutton(ng-style='colorStyle(formData.colorpicker || defaultColor)' type='button' ng-click='toggleColorPalette()' ng-blur='hideColorPalette(200)')
+      div.input-group-popup(ng-if='isColorPaletteOpen()')
+        div.grid-12
+          div.grid-3.mbs.chop-4(ng-repeat='colorItem in colorpalette')
+            button.colorbutton(ng-style='colorStyle(colorItem)' ng-click='setColor(colorItem)')
+      p.error-message(ng-show='formData.inputError && editorReasonForm.color.$error.required') Please pick a color.
+
+  div.card-content
+    div.left
+      input.button.mrs.primary#editor-form-submit(type="submit" value="Save" ng-disabled='editorReasonForm.submitted' ng-click="submit(editorCard, formData, editorReasonForm)")
+      a#editor-cancel-item.button.buttonlink.subtle(ng-click="closeEditor(editorReasonForm)") Cancel
+    div.right(ng-if='formData.id')
+      a.button.buttonlink.urgent.has-icon#editor-form-remove(ng-click="confirmDelete(formData)")
+        i.trash.urgent-text
+        span Remove

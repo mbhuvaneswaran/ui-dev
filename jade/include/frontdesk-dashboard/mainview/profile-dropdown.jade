@@ -1,0 +1,181 @@
+div.left
+  div.grid-12.mbm(ng-if="showArrived(appointment) && patientApptsPriv")
+    div.left
+      a.button.mrs.primary(ng-click='changeAppointmentState(appointment, appointmentStatus.CHECKED_IN, true); setCurrentLoader("arrivedbtn")' ng-if='showArrivedButton(appointment)') Mark as Arrived
+      a.button.mrs.disabled(ng-if='!showArrivedButton(appointment)' ng-class="{'has-spinner': data.loading && data.currentLoader == 'arrivedbtn', 'has-icon': !data.loading && showReadyButton(appointment)}")
+        span.small.spinner(ng-show='data.loading && data.currentLoader == "arrivedbtn"')
+        i.check(ng-show='!data.loading && showReadyButton(appointment)')
+        span Mark as Arrived
+    div.left.mrs &rarr;
+    div.left(ng-if="!showReadyButton(appointment)")
+      a.button.mrs.disabled Mark as Ready
+    div.left(ng-if="showReadyButton(appointment)")
+      span(ng-if='!data.loading')
+        a.button.mrs.primary(ng-click='changeAppointmentState(appointment, appointmentStatus.READY_TO_BE_SEEN, false); setCurrentLoader("readybtn")') Mark as Ready
+        br
+        a.small.button.buttonlink.subtle.mts(href='' ng-click='togglePatientDropdown(appointment)') Not yet, still working...
+      span(ng-if='data.loading && data.currentLoader == "readybtn"')
+        a.button.mrs.has-spinner.disabled
+          span.small.spinner
+          span Mark as Ready
+
+  div.grid-12.mbm(ng-if='showReady(appointment) && !appointment.intermediateState && patientApptsPriv')
+    a.button.mrs.primary(ng-show='!data.loading' ng-click='changeAppointmentState(appointment, appointmentStatus.READY_TO_BE_SEEN, false); setCurrentLoader("readybtn")' track-click='dashboard.click.primary-ready') Mark as Ready
+    a.button.mrs.disabled(ng-show='data.loading' ng-class="{'has-spinner': data.currentLoader == 'readybtn' }")
+      span.small.spinner(ng-show="data.currentLoader == 'readybtn'")
+      span Mark as Ready
+
+  div.grid-12.mbm(ng-if='showRooms(appointment) && patientApptsPriv')
+    div(ng-if="!data.loading")
+      div.left.dropdown(ng-if='data.rooms.length > 0')
+        a.button.primary Pick a Room
+        ul.dropdown-list.small.scrolly
+          li(ng-repeat = "room in data.rooms | orderBy:'resourceName' ")
+            a(href='' ng-click='selectAppointmentRoom(appointment, room); setCurrentLoader("roomedbtn")') {{room.resourceName}}
+      div.left(ng-if='data.rooms.length <= 0')
+        a.button.mrs.primary(ng-click='changeAppointmentState(appointment, appointmentStatus.ROOMED); setCurrentLoader("roomedbtn")') Mark as Roomed
+    div(ng-if="data.loading")
+      a.button.mrs.disabled(ng-class="{ 'has-spinner': data.currentLoader == 'roomedbtn' }")
+        span.small.spinner(ng-show="data.currentLoader == 'roomedbtn'")
+        span(ng-if='data.rooms.length > 0') Pick a Room    
+        span(ng-if='data.rooms.length <= 0') Mark as Roomed   
+
+  div.grid-12.mbm(ng-if='showCheckout(appointment) && patientApptsPriv')
+    a.button.mrs.primary(ng-show='!data.loading' ng-click='changeAppointmentState(appointment, appointmentStatus.CHECKED_OUT); setCurrentLoader("checkoutbtn")') Check Out
+    a.button.mrs.disabled(ng-show='data.loading' ng-class="{'has-spinner': data.loading && data.currentLoader == 'checkoutbtn' }")
+      span.small.spinner(ng-show="data.currentLoader == 'checkoutbtn' ")
+      span Check Out
+
+  div.grid-12.mbm(ng-if='showScheduleFollowUp(appointment) && patientApptsPriv')
+    a.button.mrs.primary(ng-href="{{ urlFor.calendar('view=week') }}" track-click='dashboard.click.primary-follow-up') View Calendar
+
+  div.grid-12.mbm(ng-if='showReschedule(appointment) && patientApptsPriv')
+    a.button.mrs.primary(ng-href="{{ urlFor.calendar('view=week') }}" track-click='dashboard.click.primary-reschedule') View Calendar
+
+div.right(ng-if='patientApptsPriv')
+  include more-options-dropdown
+
+div.grid-12.dashboard-item-content.nm
+  div.well.grid-12.mbm.scrolly-30
+    div.def-list.full
+      div.def-list-row
+        div.def-list-term
+          span Contact
+        div.def-list-item
+          ul.nolist.spaced
+            li
+              strong.mrs Phone:
+              span(ng-if='appointment.patientSummary.displayPhone') {{ appointment.patientSummary.displayPhone }}
+              span.subtle-text(ng-if='!appointment.patientSummary.displayPhone') None
+            li
+              strong.mrs Email:
+              span(ng-if='appointment.patientSummary.displayEmail') {{ appointment.patientSummary.displayEmail }}
+              span.subtle-text(ng-if='!appointment.patientSummary.displayEmail') None
+            li.hide
+              strong.mrs Address:
+              span 1652 Wycliffe, Irvine, Ca, 92602
+      div.def-list-row
+        div.def-list-term
+          span Appt Notes
+        div.def-list-item
+          div(ng-if='appointment.notes.length > 0') {{ appointment.notes }}
+          div.subtle-text(ng-if='!appointment.notes || appointment.notes.length <= 0') None
+     
+      div(ng-show="isDashboardEligibilityEnabled()").def-list-row
+        div.def-list-term
+          span Insurance
+        div.def-list-item(ng-if="data.loadingInsurance")
+          div.spinner
+        div.def-list-item(ng-if="!data.loadingInsurance")
+          div.subtle-text(ng-if="!insuranceData") None
+          div(ng-if="insuranceData") {{ insuranceName }}
+            div(style="display: inline-block; position: relative; top: 2px; left: -2px; margin-left: 7px", ng-show="data.loadingEligibility").spinner
+            div.subtle-text.mls(style="display: inline-block;",ng-show="data.showAdditionalMessage") Please wait, this could take a few seconds...
+          div.info-text(ng-if="lastEligibilityData.realTimeEligibilityChecks && lastEligibilityData.eligibilityStatus === null") {{ eligibilityStatus }}
+            button.button.buttonlink.np.mlm.has-icon.display-inline(ng-if='!data.loadingEligibility && lastEligibilityData.realTimeEligibilityChecks && lastEligibilityData.eligibilityStatus === null' ng-click='runEligibilityCheck(appointment.practiceId, appointment.patientSummary.patientId, appointment.providerId )')
+              span Run now
+
+      #UNKNOWN
+      div.def-list-row(ng-show="lastEligibilityData.eligibilityStatus == 'UNKNOWN' && isDashboardEligibilityEnabled()")
+        div.def-list-term  
+          span Eligibility
+        div.def-list-item
+          div.warning-text
+            strong {{ eligibilityStatus }}
+            button.button.buttonlink.np.mlm.has-icon.display-inline(ng-if='!data.loadingEligibility && lastEligibilityData.realTimeEligibilityChecks' ng-click='runEligibilityCheck(appointment.practiceId, appointment.patientSummary.patientId, appointment.providerId )')
+              span Run again 
+          div(ng-show="lastEligibilityData.requestDate")
+            span.subtle-text Last checked: {{ lastChackedDate }}
+
+      #ELIGIBLE
+      div.def-list-term  
+      div.def-list-row(ng-show="lastEligibilityData.eligibilityStatus == 'ELIGIBLE' && isDashboardEligibilityEnabled() ")
+        div.def-list-term
+          span Eligibility
+        div.def-list-item
+          div.success-text
+            strong {{ eligibilityStatus }}
+            button.button.buttonlink.np.mlm.has-icon.display-inline(ng-if='!data.loadingEligibility && lastEligibilityData.realTimeEligibilityChecks' ng-click='runEligibilityCheck(appointment.practiceId, appointment.patientSummary.patientId, appointment.providerId )')
+              span Run again
+
+      #INELIGIBLE
+      div.def-list-row.def-list-row(ng-show="lastEligibilityData.eligibilityStatus == 'INELIGIBLE' && isDashboardEligibilityEnabled() ")
+        div.def-list-term   
+          span Eligibility
+        div.def-list-item
+          div.error-text
+            strong {{ eligibilityStatus }}
+            button.button.buttonlink.np.mlm.has-icon.display-inline(ng-if='!data.loadingEligibility && lastEligibilityData.realTimeEligibilityChecks' ng-click='runEligibilityCheck(appointment.practiceId, appointment.patientSummary.patientId, appointment.providerId )')
+              span Run again
+          div(ng-show="lastEligibilityData.requestDate")
+            span.subtle-text Last checked: {{ lastChackedDate }}
+
+      div.def-list-row(ng-show='data.practice.pmenabled')
+        div.def-list-term
+          span(ng-show='data.balanceAmount >= 0 || !data.balanceAmount') Balance
+          span(ng-show='data.balanceAmount < 0') Credit
+        div.def-list-item(ng-show='data.loadingAmounts')
+          div.spinner
+        div.def-list-item(ng-show='!data.loadingAmounts')
+          span(ng-class='{"success-text": data.balanceAmount < 0, "urgent-text": data.balanceAmount > 0}') {{data.balanceAmount | currencyStrip}}
+          span.success-text.mls(ng-show='data.unappliedAmount > 0') (Paid {{data.unappliedAmount | currencyStrip}} today)
+          a.button.buttonlink.np.mlm(ng-show='data.balanceAmount > 0', ng-href='{{ urlFor.patientPaymentLink(appointment.patientSummary.patientId, appointment.appointmentId) }}') Collect Payment →
+
+      div.def-list-row(ng-show='!data.practice.pmenabled')
+        div.def-list-term
+          span Balance
+        div.def-list-item
+          div.info-text
+            span
+              | Get patient balance alerts right on your dashboard.&nbsp;
+              a(href='http://get.kareo.com/ehr_to_pm', target='_blank', track-click='dashboard.click.upsell.balance') See how it works &rarr;
+
+      div.def-list-row(ng-if="data.features.patient_alerts && data.practice.pmenabled")
+        div.def-list-term
+          span Patient Alerts
+        div.def-list-item(ng-if='!patientAlertsLoaded')
+          div.spinner
+        div.def-list-item(ng-if='patientAlertsLoaded')
+          .status-box.warning.patient-alerts(ng-if='patientAlertsLoaded && PatientAlerts.data[0].data.showInAppointment')
+              p.ng-binding(ng-repeat='messagePart in patient_alert_messages') {{ messagePart.message }}
+          span.subtle-text(ng-if='patientAlertsLoaded && !PatientAlerts.data[0].data.showInAppointment') None
+  div.grid-12 
+    a.button.plm.prm.has-icon(ng-href='{{ getPatientUrl( appointment.patientSummary.patientId ) }}')
+      i.ki.inoffice-alt
+      span View Patient Record
+
+    a.button.plm.prm.has-icon.disabled(ng-if='!(synchronizedApptLoaded && synchronizedApptFound) && clinicalNotePriv && hasClinicalFeature()')
+      i.ki.edit
+      i.spinner-message(ng-if='!synchronizedApptLoaded')
+        div.left.mrs.spinner
+        span Create Clinical Note
+      span(ng-if='synchronizedApptLoaded') Create Clinical Note
+
+    super_container(ng-if='synchronizedApptLoaded && synchronizedApptFound && clinicalNotePriv && hasClinicalFeature()')
+      a.button.plm.prm.has-icon(ng-href='{{ urlFor.ehrNewNoteLinkUpdated( appointment ) }}' ng-if='!appointment.recurring')
+        i.ki.edit
+        span Create Clinical Note
+
+      a.button.plm.prm.has-icon(ng-if='appointment.recurring && hasClinicalFeature()' ng-click='createRecurringClinicalNote( appointment )')
+        i.ki.edit
+        span Create Clinical Note

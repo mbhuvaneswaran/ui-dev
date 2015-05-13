@@ -1,0 +1,22 @@
+doctype html
+html(lang='en' ng-app='app')
+  head
+    title Kareo
+    meta(charset='UTF-8')
+
+    include ../third-party/kareo-ui-shared-directives/partials/dynamic-css/_include-css
+    link(rel='stylesheet' href='site.css' type='text/css')
+    script(src='site.js' type='text/javascript')
+  body
+    .body-wrapper(ng-controller='BodyCtrl' ng-class="{'no-flow' : Modal.isOpen() }")
+      chrome-header(ng-hide='hideChrome')
+
+      .body-wrap-outer(ng-class="{'collapse' : hideChrome }")
+        .body-wrap-inner
+          .main-content#main-content(ng-view)
+          div(style='clear:both;')
+
+      patient-create-modal
+
+    script(type='text/ng-template' id='partials/frontdesk-dashboard.html')
+      include partials/frontdesk-dashboard

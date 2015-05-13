@@ -1,0 +1,44 @@
+.card-content
+  p.nm Please confirm the changes you made to this appointment.
+    .well.mtm.mbm
+      .grid-12.mbm(ng-if='!!record.changed("deleted")')
+        h4.mbs Status
+        span.was.mrs Active
+        span.isnow Deleted
+
+      .grid-12.mbm(ng-if='!!record.changed("appointmentStatus")')
+        h4.mbs Status
+        span.was.mrs {{ ApptStatus.fancyDisplay[ record.saved.appointmentStatus ] }}
+        span.isnow {{ ApptStatus.fancyDisplay[ record.data.appointmentStatus ] }}
+
+      .grid-12.mbm(ng-if='!!record.changed("providerId", "resourceId")')
+        h4.mbs Provider/Resource
+        span.was.mrs {{ record.pro(1).name() }}
+        span.isnow {{ record.pro().name() }}
+
+      .grid-12.mbm(ng-if='!!record.changed("appointmentReasonId")')
+        h4.mbs Reason
+        span.was.mrs {{ ApptReasons.get(record.saved.appointmentReasonId).data.name }}
+        span.isnow {{ ApptReasons.get(record.data.appointmentReasonId).data.name }}
+
+      .grid-12.mbm(ng-if='record.savedStartTime().format(time_f) != record.startTime().format(time_f)')
+        h4.mbs Time
+        span.was.mrs {{ record.savedStartTime().format(time_f) }}
+        span.isnow {{ record.startTime().format(time_f) }}
+
+      .grid-12.mbm(ng-if='record.savedStartTime().format(date_f) != record.startTime().format(date_f)')
+        h4.mbs Date
+        span.was.mrs {{ record.savedStartTime().format(date_f) }}
+        span.isnow {{ record.startTime().format(date_f) }}
+      
+      .grid-12.mbm(ng-if='record.savedDuration() != record.duration()')
+        h4.mbs Duration
+        span.was.mrs {{ record.savedDuration() }}min
+        span.isnow {{ record.duration() }}min
+
+      .grid-12.mbm(ng-if='record.saved.serviceLocationId != record.data.serviceLocationId')
+        h4.mbs Location
+        span.was.mrs {{ Locations.get(record.saved.serviceLocationId).data.name }}
+        span.isnow {{ Locations.get(record.data.serviceLocationId).data.name }}
+        
+    include forms/recurring-change-form

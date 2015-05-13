@@ -1,0 +1,79 @@
+.grid-12.card
+    div.card-header
+        h2 Practice Holidays
+        div.right
+            a.button.buttonlink.has-icon(ng-click='Modal.open("holiday-modal")' track-click='calendar-settings.click.new-custom-holiday')
+                i.ki.plus
+                | New Custom Holiday
+    div.card-content.skinny
+        .grid-12.pbm.ptm.prm.plm(ng-show='holidayInstances.length == 0')
+            span.note-text You don't have any holidays listed.
+        ul.nolist.padded.has-hover
+          li.ng-scope.ng-binding(ng-repeat='holiday in holidayInstances', ng-mouseenter='holiday.showRemove = !holiday.showRemove', ng-mouseleave='holiday.showRemove = !holiday.showRemove')
+              | 
+              .grid-5.truncate.left {{ holiday.data.holidayName }}
+              .grid-5
+                  span.note-text.ng-binding {{ holiday.formattedDate() }}
+                  span.mlm.label.primary(ng-if='holiday.data.customHolidayId != 0') Custom Holiday
+              .grid-2.nm
+                  button.button.buttonlink.subtle.has-icon.ng-hide(ng-show='holiday.showRemove', ng-click='removeInstanceModal(holiday)', style='position:absolute; right:0.5em; top:0em;')
+                      i.ki.trash
+                      | Remove
+     div.card-content
+        a.button.buttonlink.small(ng-click='Modal.open("practice-holidays")' track-click='calendar-settings.click.edit-holiday-list')  Change what holidays your practice observes →
+
+div.lightbox.open(ng-if="Modal.isModal('remove-instance-modal')")
+    div.modal
+        div.card
+            div.card-header
+                h2(ng-if='instanceToRemove.data.customHolidayId && instanceToRemove.data.customHolidayId != null') Remove Custom Holiday
+                h2(ng-if='instanceToRemove.data.customHolidayId == null || instanceToRemove.data.customHolidayId == 0') Remove Holiday
+            div.card-content
+                div.grid-8.offset-left-2.mtl.mbl.aligncenter
+                    span Are you sure you want to remove this instance of
+                    p
+                        strong.ng-binding {{ instanceToRemove.data.holidayName }}
+                    span(ng-if='instanceToRemove.data.customHolidayId && instanceToRemove.data.customHolidayId != null') as a custom practice holiday?
+                    span(ng-if='instanceToRemove.data.customHolidayId == null || instanceToRemove.data.customHolidayId == 0') as a practice holiday?
+                        p.note-text This holiday will appear on your calendar next year.
+            div.card-content
+                button.button.urgent.has-icon(ng-click="removeInstance()")
+                    i.ki.trash
+                    | Remove this instance
+                button.button.buttonlink.subtle(ng-click='Modal.close()') Cancel
+
+div#custom-holiday-modal.lightbox.open(ng-if="Modal.isModal('holiday-modal')")
+    .modal
+        .grid-12.card.ng-scope
+            .card-header
+                h2 New Custom Holiday
+                a.close(ng-click='Modal.close()') ×
+            .card-content
+                .input-group(ng-class="{error: customHoliday.nameError}")
+                    label Name
+                    input(type='text', ng-model='customHoliday.holidayName', maxlength='128', focus-on='true')
+                    div.error-message.ng-scope(ng-message='required', ng-if='customHoliday.nameError') This field is required
+                .input-group(ng-class="{error: customHoliday.startDateError}")
+                    label Date/Time
+                    input.xsmall(type='text', ng-model='customHoliday.startDate', datepicker, readonly, min-date-ms='{{ today }}', datepicker-model='customHoliday.startDate', child-of='custom-holiday-modal')
+                    div.error-message.ng-scope(ng-message='required', ng-if='customHoliday.startDateError') This field is required
+            .card-content
+                a.left.primary.button(ng-click='saveCustomHoliday()') Save
+                a.left.button.buttonlink.subtle(ng-click='cancelHoliday()') Cancel
+
+.lightbox.open(ng-if="Modal.isModal('practice-holidays')")
+    .modal
+        .grid-12.card
+            .card-header
+                h2 Edit Holidays
+                a.close(ng-click='Modal.close()') ×
+            .card-content
+                .checkbox(ng-repeat='observed in observedHolidays')
+                    input(id='holiday_{{observed.id}}', type='checkbox', ng-model='observed.data.observed')
+                    label(for='holiday_{{observed.id}}') {{ observed.data.holidayName }}
+            .card-content
+                span.note-text
+                    | If a holiday falls on the weekend, no adjustment will be made. You can add a custom holiday to make up for it based on your practice preference.
+            .card-content
+                a.left.primary.button(ng-click='persistObservedHolidays()') Save
+                a.left.button.buttonlink.subtle(ng-click='Modal.close()') Cancel

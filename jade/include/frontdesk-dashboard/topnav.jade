@@ -1,0 +1,27 @@
+.page-title(ng-controller='PatientLoadCtrl')
+  h1 Dashboard
+  .page-controls
+    .dashboard-date-control
+        button.button.buttonlink.subtle(ng-click='previousDay()') ←
+        span.has-icon.date-control-container(ng-click="showCalendar()")
+          input.input.xsmall.date#dateOfAppointments(type='text' ng-model='time.string_date', datepicker, readonly, datepicker-model='time.string_date' format="ddd, MMM DD, YYYY" onselect='onDateChange()' ng-blur="onBlurHandler()" ng-class="{inputActive: datePickerActive, inputInactive: !datePickerActive }")
+          i.ki.calendar
+        button.button.buttonlink.subtle(ng-click='nextDay()') →
+    .dropdown.mls#dashboard-locations(ng-show='data.showableLocations.length > 1')
+      button.subtle.buttonlink.button {{ data.currentLocation.name }}
+      ul.dropdown-list
+        li(ng-repeat='location in data.showableLocations')
+          a(href='' ng-click='changeLocation(location)') {{ location.name }}
+    .dropdown.mls#dashboard-providers(ng-show='data.showable.providers.length + data.showable.staff.length > 1')
+      button.subtle.buttonlink.button(ng-if='data.currentProvider') {{ data.currentProvider.firstName }} {{ data.currentProvider.lastName }}
+      button.subtle.buttonlink.button(ng-if='data.currentStaff') {{ data.currentStaff.resourceName }}
+      button.subtle.buttonlink.button(ng-if='!(data.currentProvider || data.currentStaff)') All Providers/Staff
+      ul.dropdown-list
+        li(ng-if='data.currentProvider || data.currentStaff')
+          a(href='' ng-click='changeProvider(null); changeStaff(null)') All Providers/Staff
+        li.heading(ng-if='data.showable.providers.length > 0 && data.showable.staff.length > 0') Providers
+        li(ng-repeat='provider in data.showable.providers | orderBy : ["firstName", "lastName"]' ng-show='getProviderLoad(data.appointments, provider).length > 0')
+          a(href='' ng-click='changeProvider(provider)' ng-show='provider != data.currentProvider') {{provider.firstName}} {{provider.lastName}}
+        li.heading(ng-if='data.showable.providers.length > 0 && data.showable.staff.length > 0') Staff
+        li(ng-repeat='staff in data.showable.staff')
+          a(href='' ng-click='changeStaff(staff)' ng-show='staff != data.currentStaff') {{ staff.resourceName }}

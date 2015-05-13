@@ -1,0 +1,28 @@
+.card-content
+  p.nm
+    span Please confirm that you want to 
+    strong.urgent-text delete 
+    span this appointment.
+    .well.mtm.mbm
+      .def-list.small
+        .def-list-row
+          .def-list-term Patient
+          .def-list-item {{ record.name() }}
+
+        .def-list-row
+          .def-list-term Reason
+          .def-list-item {{ ApptReasons.get(record.saved.appointmentReasonId).data.name }}
+
+        .def-list-row
+          .def-list-term Time/Date
+          .def-list-item {{ record.savedStartTime().format(date_f) }} at {{ record.savedStartTime().format(time_f) }}
+
+        .def-list-row
+          .def-list-term Provider/Resource
+          .def-list-item {{ record.pro().name() }}
+
+        .def-list-row
+          .def-list-term Location
+          .def-list-item {{ Locations.get(record.saved.serviceLocationId).data.name }}
+
+    include forms/recurring-change-form

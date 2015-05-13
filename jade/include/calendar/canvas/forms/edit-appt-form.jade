@@ -1,0 +1,106 @@
+.inline.small.mbs.input-group(ng-show='Pros.withResources().length > 1')
+  .input-group-item
+    .input-group-item-cell
+      label Provider/Resource
+    .input-group-item-cell
+      select(ng-model='selectedProOrRsc' required ng-options='item.xid as item.name() group by item.rscGroup() for item in Pros.withResources()' ng-change='selectProOrRsc(selectedProOrRsc); rerender(); findConflicts();')
+
+.inline.small.mbs.input-group
+  .input-group-item
+    .input-group-item-cell
+      label Date/Time
+    .input-group-item-cell
+      input.xsmall(type='text' ng-model='form.date' datepicker readonly datepicker-model='form.date' ng-change='dateTimeChange();', child-of='edit-appt-modal')
+      select.tall.mls.small(ng-model='form.time' ng-options='timeslot for timeslot in timeslots' ng-change='dateTimeChange();')
+
+.inline.small.mbs.input-group
+  .input-group-item(ng-class='{error: form.submitted && createApptForm.appointmentReasonId.$error.required}')
+    .input-group-item-cell
+      label Visit Reason
+    .input-group-item-cell
+      select(ng-model='data.appointmentReasonId' required ng-change='apptReasonChange()' ng-options="item.id as item.data.name group by item.data.deleted for item in ApptReasons.data | filter:{ data : 'false' }" name='appointmentReasonId' firefox-disabled-option-fix firefox-disabled-option-ignore='{{ data.appointmentReasonId != null }}')
+        option(value='', disabled='true', selected='true') - Select a Visit Reason -
+      p.error-message(ng-if='form.submitted && createApptForm.appointmentReasonId.$error.required') Visit Reason is required
+
+.inline.small.mbs.input-group
+  .input-group-item(ng-class='{error: form.submitted && createApptForm.duration.$error.required}')
+    .input-group-item-cell
+      label Duration
+      span.note-text (in mins)
+    .input-group-item-cell
+      input.xsmall(type='text' valid-integer integer-min='1' integer-max='1440' required ng-model='form.duration' ng-change='durationChange()' name='duration')
+      p.error-message(ng-if='form.submitted && createApptForm.duration.$error.required') Duration is required
+
+.inline.small.mbs.input-group
+  .input-group-item(ng-class='{error: form.submitted && createApptForm.location.$error.required}')
+    .input-group-item-cell
+      label Location
+    .input-group-item-cell
+      select(name='location' required ng-model='data.serviceLocationId' ng-options='item.id as item.data.name for item in Locations.data' firefox-disabled-option-fix firefox-disabled-option-ignore='{{ data.serviceLocationId != null || Locations.data.length === 1 }}')
+        option(value='', disabled='true', selected='true') - Select a Location -
+      p.error-message(ng-if='form.submitted && createApptForm.location.$error.required') Location is required
+
+.inline.small.mbs.input-group
+  .input-group-item
+    .input-group-item-cell
+      label Note
+      span.note-text (optional)
+    .input-group-item-cell
+      textarea.resize-v(name="notes" type='text' ng-model='data.notes' maxlength='1024')
+      span.note-text You can put in a chief complaint or any note related to the appointment.
+
+.inline.small.nm.input-group
+  .input-group-item
+    .input-group-item-cell
+      label Recurrence
+      span.note-text (optional)
+    .input-group-item-cell(ng-if='record.unhandledRecurrence')
+      .grid-12.status-box.warning
+        p.nm.text-has-icon.warning-text
+          i.ki.attention
+          | Editing this Recurrence
+        p Looks like this recurrence originated in Kareo PM. Unfortunately, if you want to change it, you have to do so in the PM.
+    .input-group-item-cell(ng-if='!record.unhandledRecurrence')
+      .button.buttonlink.has-icon(ng-if='!data.recurring' ng-click='data.recurring = true; setDayOfWeek( record, recurrenceDaysEnum );')
+        i.ki.plus
+        span Add Recurrence
+
+      .grid-12.tabs-contained-horizontal(ng-if='data.recurring')
+        .small.button.buttonlink.alert.has-icon.corner-btn(ng-click='data.recurring = false; createApptForm.$setValidity("dayOfWeekFlags", true); findConflicts()')
+            i.ki.trash
+            | Remove Recurrence
+          ul.tabs-nav
+            li
+              a(href='' ng-click='form.recurrenceOption = ""' ng-class='{selected: !form.recurrenceOption}') Weekly
+            li
+              a(href='' ng-click='form.recurrenceOption = "other"' ng-class='{selected: form.recurrenceOption}') Other
+          .tabs-content(ng-if='!form.recurrenceOption')
+            .grid-12
+              .input-group(ng-class='{error: form.submitted && createApptForm.$error.dayOfWeekFlags}')
+                label Days of the Week
+                .button-group.seven-buttons.fill
+                  .small.button(ng-repeat='day in recurrenceDaysEnum' ng-click='record.setRecurrenceDay(day.id); recurrenceDaysEnum[day.id] = record.getRecurrenceDaysEnum()[day.id]; checkRecurrenceDays(createApptForm);' ng-class='{active: day.up}') {{day.name}}
+                p.urgent-text.small-text.error-message(ng-if='form.submitted && createApptForm.$error.dayOfWeekFlags') Selecting one or more days is required
+              .input-group
+                label Limit
+                .button-group.three-buttons.fill
+                  .button.small(ng-click='setLimitView()' ng-class='{active: !form.limit}') None
+                  .button.small(ng-click='setLimitView("visit")' ng-class='{active: form.limit == "visit"}') # of Visits
+                  .button.small(ng-click='setLimitView("end-date")' ng-class='{active: form.limit == "end-date"}') End Date
+            .grid-12.input-group.nm(ng-if='form.limit == "visit"')
+              span Ends after
+              input.mls.mrs.xsmall(type='text' valid-integer integer-min='1' integer-max='1440' required ng-model='data.recurrenceRule.numberOfTimes' ng-change='findConflicts()' name='recurrenceLimit')
+              span visits
+              p.urgent-text.small-text.error-message(ng-if='form.submitted && createApptForm.recurrenceLimit.$error.required') Number of visits is required
+
+            .grid-12.input-group.nm(ng-if="form.limit == 'end-date'" ng-class='{error: (data.recurrenceRule.endDate && data.recurrenceRule.endDate != record.saved.recurrenceRule.endDate && data.recurrenceRule.endDate < minRecurrenceEndDate) || (form.submitted && createApptForm.recurrenceDateEnd.$error.required)}')
+              span Ends after
+              input.mls.xsmall(readonly, type='text', ng-model='form.recurrencedate', required, datepicker, datepicker-model='form.recurrencedate', ng-change='recurrenceDateChange();', name='recurrenceDateEnd', child-of='edit-appt-modal', min-date-ms='{{ minRecurrenceEndDate }}', watch-min-date-value='minRecurrenceEndDate')
+              p.urgent-text.small-text.error-message(ng-if='data.recurrenceRule.endDate && data.recurrenceRule.endDate < minRecurrenceEndDate && data.recurrenceRule.endDate != record.saved.recurrenceRule.endDate') End date should not be earlier than the appointment date
+              p.urgent-text.small-text.error-message(ng-if='form.submitted && createApptForm.recurrenceDateEnd.$error.required') End date is required
+
+          .tabs-content(ng-if='form.recurrenceOption')
+            p At the moment, Kareo EHR only allows for weekly recurrences.
+            p.normal-wrap If you would like to see other recurrence options,&nbsp;
+              a(href='http://www.instant.ly/s/i8RQs/nav#p/186a0' target='_blank') fill out this survey
+              | &nbsp;with the options you'd like to see.

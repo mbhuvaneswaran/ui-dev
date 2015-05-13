@@ -1,0 +1,68 @@
+.grid-12.card
+    .card-header
+        h2 Staff Time Off
+        .right
+            a.button.buttonlink.has-icon(ng-click="Modal.open('time-off-modal')")
+                i.ki.plus
+                | New Time Off Event
+    .card-content.skinny
+        .grid-12.ptm.pbm.prm.plm(ng-show='vacations.length == 0')
+            span.note-text No staff time off events listed.
+        ul.lined-link-list
+            li.ng-scope(ng-repeat='vacation in vacations')
+                a(ng-click='editTimeOffModal(vacation)')
+                    .grid-12
+                        .grid-5
+                            span.mls.ng-binding.truncate {{ vacation.name }} - {{ vacation.data.reason }}
+                        .grid-6
+                            span.note-text.mls.ng-binding {{ vacation.start }} - {{ vacation.end }}
+div#delete-time-off-modal.lightbox.open(ng-if="Modal.isModal('delete-time-off-modal')")
+    .modal
+        .card
+            .card-header
+                h2 Delete Time Off
+            .card-content
+                .grid-8.offset-left-2.mtl.mbl.aligncenter
+                    .grid-12
+                        | Are you sure you want to delete this time off?
+                    .grid-12.mtm
+                        strong.ng-binding.truncate {{ editTimeOff.name }} - {{ editTimeOff.data.reason }}
+                    .grid-12.ng-binding
+                        | {{ editTimeOff.start }} - {{ editTimeOff.end }}
+            .card-content
+                button.button.urgent.has-icon(ng-click='removeTimeOff()')
+                    i.ki.trash
+                    | Remove
+                button.button.buttonlink.subtle(ng-click='cancelTimeOff()') Cancel
+div#time-off-modal.lightbox.open(ng-if="Modal.isModal('time-off-modal')")
+    .modal
+        .card
+            .card-header
+                h2 New Time Off Event
+                a.close(ng-click='cancelTimeOff()') ×
+            .card-content
+                .input-group(ng-class="{error: editTimeOff.providerError}")
+                    label Staff
+                    select.ng-pristine.ng-valid(ng-model='editTimeOff.providerOrResourceId', ng-options='provider.xid as provider.name() group by provider.rscGroup() for provider in Pros.withResources(0, 3)')
+                    div.ng-scope.error-message(ng-message='required', ng-if='editTimeOff.providerError') Pick a staff member.
+                .input-group(ng-class="{error: editTimeOff.reasonError}")
+                    label Reason
+                    input(type='text', ng-model='editTimeOff.data.reason', maxlength='128')
+                    div.ng-scope.error-message(ng-message='required', ng-if='editTimeOff.reasonError') Enter the reason for the time off event.
+                .input-group(ng-class="{error: editTimeOff.startDateError}")
+                    label Start Date/Time
+                    input.xsmall(type='text', ng-model='editTimeOffForm.sDate', datepicker, readonly, datepicker-model='editTimeOffForm.sDate', child-of='time-off-modal')
+                    select.tall.mls.small(ng-model='editTimeOffForm.sTime', ng-options='timeslot for timeslot in timeSlots')
+                    div.ng-scope.error-message(ng-message='required', ng-if='editTimeOff.startDateError') Enter a start date and time. This must be before the end date/time.
+                .input-group(ng-class="{error: editTimeOff.endDateError}")
+                    label End Date/Time
+                    input.xsmall(type='text', ng-model='editTimeOffForm.eDate', datepicker, readonly, datepicker-model='editTimeOffForm.eDate', child-of='time-off-modal')
+                    select.tall.mls.small(ng-model='editTimeOffForm.eTime', ng-options='timeslot for timeslot in timeSlots')
+                    div.ng-scope.error-message(ng-message='required', ng-if='editTimeOff.endDateError') Enter an end date and time. This must be after the start date/time.
+            .card-content
+                button.primary.button(ng-if='!editTimeOff.data.timeOffId', ng-click='saveTimeOff()') Create Time Off Event
+                button.primary.button(ng-if='editTimeOff.data.timeOffId', ng-click='saveTimeOff()') Save
+                button.button.buttonlink.subtle(ng-click='cancelTimeOff()') Cancel
+                button.right.button.urgent.buttonlink.has-icon(ng-if='editTimeOff.data.timeOffId', ng-click='removeTimeOffModal()')
+                    i.ki.trash
+                    | Delete

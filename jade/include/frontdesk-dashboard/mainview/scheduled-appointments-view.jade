@@ -1,0 +1,7 @@
+div.card-content
+  div.mtl.mbl.aligncenter(ng-if='data.appointments.length <= 0')
+    span.larger-text.subtle-text No appointments are scheduled for today.
+  div.mtl.mbl.aligncenter(ng-if='data.appointments.length > 0 && data.scheduledAppointments.length <= 0')
+    span.larger-text.subtle-text All of today's patients are accounted for!
+  div.dashboard-item(ng-repeat="appointment in data.scheduledAppointments | orderBy:'startTime'" ng-class="{open: data.isAppointmentOpen == true && appointment == selectedAppointment, animated : data.isAppointmentAnimated && appointment == selectedAppointment}")
+    include profile

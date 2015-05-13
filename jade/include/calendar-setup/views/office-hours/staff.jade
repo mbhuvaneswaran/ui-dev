@@ -1,0 +1,37 @@
+.card
+  .card-header
+      h2 Staff Office Hours
+      a.button.buttonlink.has-icon.right(ng-href="{{urlFor.officeHoursSetup()}}/0/1/{{'New Staff' | encodeURI}}")
+        i.plus
+        | New Staff
+    .card-content
+      .grid-12 
+        .grid-4.chop-3.ng-scope(ng-repeat='member in staff')
+          .grid-12.status-box.primary.mbm
+            .grid-10
+              h3.truncate.base-text.mbs.ng-binding {{ member.saved.resourceName }}
+              div(ng-if='debug') Debug || Resourceid : {{ member.id }} || ResourceType : {{ member.saved.resourceTypeId }}
+              .def-list.condensed.small-text
+                .def-list-row
+                  .def-list-term Mo
+                  .def-list-item {{ getHours('staff', member.id, 1) || '-' }}
+                .def-list-row
+                  .def-list-term Tu
+                  .def-list-item {{ getHours('staff', member.id, 2) || '-' }}
+                .def-list-row
+                  .def-list-term We
+                  .def-list-item {{ getHours('staff', member.id, 3) || '-' }}
+                .def-list-row
+                  .def-list-term Th
+                  .def-list-item {{ getHours('staff', member.id, 4) || '-' }}
+                .def-list-row
+                  .def-list-term Fr
+                  .def-list-item {{ getHours('staff', member.id, 5) || '-' }}
+                .def-list-row
+                  .def-list-term Sa
+                  .def-list-item {{ getHours('staff', member.id, 6) || '-' }}
+                .def-list-row
+                  .def-list-term Su
+                  .def-list-item {{ getHours('staff', member.id, 7) || '-' }}
+            .grid-2
+              a.button.buttonlink.small(ng-href="{{urlFor.officeHoursSetup()}}/{{member.data.resourceId}}/1/{{member.data.resourceName | encodeURI}}") Edit

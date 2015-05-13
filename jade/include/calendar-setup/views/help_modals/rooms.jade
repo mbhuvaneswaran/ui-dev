@@ -1,0 +1,18 @@
+.small.container
+    .card
+        .card-header
+          h2 About Rooms
+          a.close(href='', ng-click='Modal.close()') ×
+        .card-content.skinny
+          .grid-12
+            .grid-6.pm
+              p.mts
+                | You can create Rooms to
+                strong  track your patients 
+                | . When you create a room, they will
+                strong  show up in the Dashboard 
+                | so you can easily assign a patient to a room.
+            .grid-6
+              img.left(style='border-left: 1px solid #eee;', src='./image/help_modals/rooms.png')
+        .card-content
+          button.primary.button(ng-click="Modal.close()") Ok, got it

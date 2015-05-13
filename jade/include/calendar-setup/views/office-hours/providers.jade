@@ -1,0 +1,34 @@
+.card
+  .card-header
+      h2 Provider Office Hours
+    .card-content
+      .grid-12 
+        .grid-4.chop-3.ng-scope(ng-repeat='provider in providers')
+          .grid-12.status-box.primary.mbm
+            .grid-10
+              h3.truncate.base-text.mbs.ng-binding {{ provider.name() }}
+              div(ng-if='debug') Debug || ProviderId : {{ provider.id }}
+              .def-list.condensed.small-text
+                .def-list-row
+                  .def-list-term Mo
+                  .def-list-item {{ getHours('provider', provider.id, 1) || '-' }}
+                .def-list-row
+                  .def-list-term Tu
+                  .def-list-item {{ getHours('provider', provider.id, 2) || '-' }}
+                .def-list-row
+                  .def-list-term We
+                  .def-list-item {{ getHours('provider', provider.id, 3) || '-' }}
+                .def-list-row
+                  .def-list-term Th
+                  .def-list-item {{ getHours('provider', provider.id, 4) || '-' }}
+                .def-list-row
+                  .def-list-term Fr
+                  .def-list-item {{ getHours('provider', provider.id, 5) || '-' }}
+                .def-list-row
+                  .def-list-term Sa
+                  .def-list-item {{ getHours('provider', provider.id, 6) || '-' }}
+                .def-list-row
+                  .def-list-term Su
+                  .def-list-item {{ getHours('provider', provider.id, 7) || '-' }}
+            .grid-2
+              a.button.buttonlink.small(ng-href="{{urlFor.officeHoursSetup()}}/{{provider.id}}/0/{{provider.fullName() | encodeURI}}" track-click='calendar-settings.click.office-hours-edit') Edit

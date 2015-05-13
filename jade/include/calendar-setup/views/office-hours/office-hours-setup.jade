@@ -1,0 +1,63 @@
+.card
+    .card-header
+        h2 Office Hours
+    .card-content
+        h3.mbs.base-text Quick Pre-sets
+        .button-group
+            button.button(ng-click="defaultWeekDays()") M - F, 9am - 5pm
+            button.button(ng-click="blankWeekDays()") Blank Slate
+    .card-content
+        .grid-12.mbl(ng-repeat='day in days')
+            label(for='{{day.name}}')
+                strong {{day.name}}
+                span.mlm.small-text(ng-hide='day.slots.length') You don't have any office hours on this day.
+            .well
+                .grid-12.mbs
+                    | Time slots &nbsp;
+                    span.note-text These are the hours you work
+                .grid-12
+                    div.input-group.mbs(ng-repeat='slot in day.slots')
+                        .input-group.display-inline(ng-class='{error: (slot.incompleteFinish && slot._error.start) || slot._error.conflict}')
+                            select.mrs.time.tall(ng-model='slot.start' ng-options='timeslot for timeslot in timeSlots' ng-change='slotDataChange(day,slot,$index)')
+                        span.mrs to
+                        .input-group.display-inline(ng-class='{error: (slot.incompleteFinish && slot._error.end) || slot._error.order || slot._error.conflict}')
+                            select.mrs.time.tall(ng-model='slot.end' ng-options='timeslot for timeslot in timeSlots' ng-change='slotDataChange(day,slot,$index)')
+                        span.mrs at
+                        .input-group.display-inline(ng-class='{error: (slot.incompleteFinish && slot._error.location)}')
+                            select.mrm.small.tall(ng-model='slot.data.serviceLocationId' ng-options='location.id as location.name for location in locations' ng-change='slotDataChange(day,slot,$index)')
+                        button.button.has-icon.buttonlink(ng-click='removeSlot(day, $index)')
+                            i.urgent-text.small-text.ki.trash
+                        .input-group.error(ng-if='slot._error.order')
+                            .error-message &nbsp; Start time should be before end time
+                        .input-group.error(ng-if='slot.incompleteFinish && slot._error.partial')
+                            .error-message &nbsp; Both start and end times are required.
+                        .input-group.error(ng-if='slot.incompleteFinish && slot._error.location')
+                            .error-message &nbsp; Service location is required.
+                    .input-group.error(ng-if='day._conflict')
+                        .error-message &nbsp; Your time slots can't overlap.
+                button.button.small.buttonlink.has-icon(ng-click='addSlot(day)')
+                    i.plus
+                    | Time Slot
+                div.input-group.mtl.mbs
+                    .grid-12.mbs
+                        | Breaks &nbsp;
+                        span.note-text Lunches, coffee breaks, etc
+                    .grid-12
+                        div.input-group.mbs(ng-repeat='break in day.breaks', ng-class="{error: break.invalid || break.incompleteFinish}")
+                            select.xsmall.tall.mrs(ng-model="break.duration", ng-change='breakChange(day,break,$index)')
+                                option 1.5hr
+                                option 1hr
+                                option 45min
+                                option 30min
+                                option 15min
+                            input.small.mrs(type='text', ng-model='break.data.label', ng-change='breakChange(day,break,$index)')
+                            span at
+                            select.mrm.mls.time.tall(ng-model='break.start', ng-options='timeslot for timeslot in timeSlots', ng-change='breakChange(day,break,$index)')
+                            button.button.has-icon.buttonlink(ng-click='removeBreak(day, $index)')
+                                i.urgent-text.small-text.ki.trash
+                            div.error-message(ng-if='break.invalid || break.incompleteFinish')
+                                span(ng-if='!break.labelError') &nbsp; Your breaks can't overlap.
+                                span(ng-if='break.labelError') &nbsp; Breaks must contain a description
+                button.button.small.buttonlink.has-icon(ng-click='addBreak(day)')
+                    i.plus
+                    | Break

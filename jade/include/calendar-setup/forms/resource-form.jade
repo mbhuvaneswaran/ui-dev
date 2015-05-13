@@ -1,0 +1,21 @@
+form#editor-form(name='editResourceForm' novalidate='')
+  div.card-content
+    div.panel.error.has-icon(ng-if='formData.submissionError.length > 0')
+      i.ki.attention 
+      span {{formData.submissionError}}
+
+    input.hide(ng-model="formData.id")
+
+    div.input-group(ng-class='{"error":formData.inputError && editResourceForm.name.$error.required}')
+      label Name
+      input.editor-focus-target#editor-form-input-name(type='text' placeholder="Name" ng-model="formData.name" name='name' ng-focus='editorShow=true' required='' maxlength='50')
+      p.error-message(ng-show='formData.inputError && editResourceForm.name.$error.required') Please enter a name.
+
+  div.card-content
+    div.left
+      input.button.mrs.primary#editor-form-submit(type="submit" value="Save" ng-model="formData.submission" ng-click="submit(editorCard, formData, editResourceForm)")
+      a#editor-cancel-item.button.buttonlink.subtle(ng-click="closeEditor(editResourceForm)") Cancel
+    div.right(ng-if='formData.id')
+      a.button.buttonlink.urgent.has-icon#editor-form-remove(ng-click="confirmDelete(formData)")
+        i.trash.urgent-text
+        span Remove

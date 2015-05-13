@@ -1,0 +1,17 @@
+ul.dropdown-list
+  li(ng-if='record.data.appointmentStatus == ApptStatus.id("tentative")')
+    a(href='' ng-click='record.data.appointmentStatus = ApptStatus.id("scheduled"); showConfirmed(createApptForm);')
+      | Schedule Appointment
+  li(ng-if='record.data.appointmentStatus != ApptStatus.id("cancelled")')
+    a(href='' ng-click='record.data.appointmentStatus = ApptStatus.id("cancelled"); showConfirmed(createApptForm);')
+      | Cancel Appointment
+  li
+    a(href='' ng-click='record.data.deleted = true; showConfirmed(createApptForm);') Delete Appointment
+  li.divide(ng-if='record.data.appointmentStatus == ApptStatus.id("tentative")')
+  li(ng-if='record.data.appointmentStatus == ApptStatus.id("tentative")')
+    a(href='' ng-click='changePatient()') Change Patient
+  li.divide
+  li
+    a(ng-click='viewPatientRecord( editForm )' href='') View Patient Record
+  li(ng-show='pmEnabled && features["dark-feature.patient-tx-detail"]')
+    a(ng-href='{{ UrlFor.patientPaymentLink(record.data.patientSummary.patientId, record.data.appointmentId) }}') Collect Payment →

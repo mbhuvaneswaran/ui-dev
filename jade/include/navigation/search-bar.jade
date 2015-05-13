@@ -1,0 +1,14 @@
+.ng-scope.input-group.nm
+  i.searchi.search
+  input.ng-pristine.ng-valid#patient_search(type='text', ng-model='searchText', placeholder='Start typing a patient name...', key-down-bind, key-down-bind-function='handleKeyEvents(event)')
+  .type-ahead-results(ng-hide='!searchText || hasPatient')
+      ul.lined-link-list
+        li(ng-if='!searchError' ng-repeat='patient in patients.data | limitTo:resultMax')
+          a#ui-active-menuitem.omni-search-result(ng-href="{{ urlFor.ehrFacesheet( patient.data.patientId ) }}" ng-class='{selected: patient.data.patientId == searchSelectedPatient.data.patientId}')
+            span.text-results {{patient.data.firstName}} {{patient.data.lastName}}, {{ patient.dob().format('DD MMM YYYY') }}
+        li(ng-if='!searchError')
+          a#create-new-patient(href='../patient-mgmt-ui/' ng-class='{selected: newPatientSelected}')
+            strong {{ searchText }}
+            |  is a new patient. Click to create new patient record.
+        li(ng-if='searchError')
+          .mlm.subtle-text An error occurred on the server. Please try again later.

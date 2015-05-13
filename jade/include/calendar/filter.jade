@@ -1,0 +1,56 @@
+.filter.card.transitioned-5.quart(ng-controller='FilterCtrl')
+  .card-content
+    .grid-12.mbm(ng-if='View.view == View.WEEK')
+      h3.mbs.base-text 
+        strong Provider/Resource
+      .input-group.nm
+        select#weekly-provider-combo(ng-change='Pros.updateSelected(); trackProviderSelectedUpdate();' ng-model='Pros.selectedProviderId' ng-options='item.xid as item.name() group by item.rscGroup() for item in Pros.withResources()')
+        p.error-message(ng-if='!Pros.selectedProviderId') Please select a provider!
+    .grid-12.mbm(ng-if='View.view != View.WEEK')
+      h3.mbs.base-text
+        strong Providers
+      .input-group.nm(ng-if='View.view != View.WEEK')
+        #dbg12.checkbox(ng-repeat='provider in Pros.data')
+          input(type='checkbox' id='provider-checkbox-{{provider.id}}' ng-model='provider.visible' ng-disabled='View.readOnlyProvider' ng-change='Pros.emitSync("update")')
+          label(for='provider-checkbox-{{provider.id}}')
+            .truncate
+              span.last-name {{provider.data.lastName}}
+              | , {{provider.data.firstName}}
+    .grid-12.mbm(ng-if='View.view != View.WEEK && enabledFeature[FT_DARK_NON_PROVIDER_CALENDARS] && Resources.findBy("resourceTypeId", 3).length')
+      h3.mbs.base-text 
+        strong Staff
+      .input-group.nm
+        #dbg12.checkbox(ng-repeat='resource in Resources.findBy("resourceTypeId", 3)')
+          input(type='checkbox' id='resource-checkbox-{{resource.id}}' ng-model='resource.visible' ng-disabled='View.readOnlyProvider' ng-change='Resources.emitSync("update")')
+          label(for='resource-checkbox-{{resource.id}}') {{resource.name()}}
+    .grid-12.mbm(ng-if='View.view != View.WEEK && enabledFeature[FT_DARK_NON_PROVIDER_CALENDARS] && Resources.findBy("resourceTypeId", 2).length')
+      h3.mbs.base-text 
+        strong Equipment
+      .input-group.nm
+        #dbg12.checkbox(ng-repeat='resource in Resources.findBy("resourceTypeId", 2)')
+          input(type='checkbox' id='resource-checkbox-{{resource.id}}' ng-model='resource.visible' ng-disabled='View.readOnlyProvider' ng-change='Resources.emitSync("update")')
+          label(for='resource-checkbox-{{resource.id}}') {{resource.name()}}
+    .grid-12(ng-if='View.view != View.WEEK && !View.readOnlyProvider')
+      #calendar-filter-providers-check-all.button.small.truncate(ng-click='checkAll()') check/uncheck all
+  //- .card-content(ng-if='View.view != View.WEEK && enabledFeature[FT_DARK_NON_PROVIDER_CALENDARS] Resources.findBy("resourceTypeId", 1).length')
+    h3.mbs Room
+    .input-group.nm
+      #dbg12.checkbox(ng-repeat='resource in Resources.findBy("resourceTypeId", 1)')
+        input(type='checkbox' id='resource-checkbox-{{resource.id}}' ng-model='resource.visible' ng-disabled='View.readOnlyProvider' ng-change='Resources.emitSync("update")')
+        label(for='resource-checkbox-{{resource.id}}') {{resource.name()}}
+    
+  .card-content(ng-if='Locations.data.length > 1')
+    h3.mbs.base-text 
+      strong Locations
+    .input-group.nm
+      #dbg13.checkbox(ng-repeat='location in Locations.data')
+        input(type='checkbox' id='location-checkbox-{{location.id}}' ng-model='location.visible' ng-change='Locations.emitSync("update")')
+        label(for='location-checkbox-{{location.id}}') 
+          .truncate {{location.data.name}}
+  .card-content(ng-if='View.view == View.WEEK')
+    h3.mbs.base-text 
+      strong Days of the Week
+    .input-group.nm
+      #dbg15.checkbox(ng-repeat='day in View.days')
+        input(type='checkbox' id='day-checkbox-{{day.id}}' ng-model='day.visible' ng-change='View.emitSync("update")')
+        label(for='day-checkbox-{{day.id}}') {{day.name}}

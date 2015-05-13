@@ -1,0 +1,26 @@
+.week-view.card(ng-if='View.type == View.VERTICAL')
+  .card-content.small-text
+    #calendar-week-current.button.left.mrs(ng-click='goToCurrentTime()' ng-disabled='View.onCurrentTime' ng-if='!View.readOnlyProvider') {{View.view == View.WEEK ? 'Current Week' : 'Current Time'}}
+    .left.button-group(ng-if='!View.readOnlyProvider')
+      #calendar-week-prev.button(ng-click='View.update(View.tz.prevDay(View.view == View.WEEK ? 7 : 1).unix())') &#8592;
+      #calendar-week-next.button(ng-click='View.update(View.tz.nextDay(View.view == View.WEEK ? 7 : 1).unix())') &#8594;
+    #calendar-date.left.mrm.mlm.medium.base-text.date-picker-inactive.date-picker(type='text', datepicker='', readonly='',  datepicker-model='$parent.dateInfo', format='dddd, MMM DD, YYYY', onselect='goToCalendarDate()', ng-blur='onBlurHandler()')
+      | {{$parent.dateInfo}}
+    include zoom-buttons
+  .columns.caps(ng-style='{paddingRight: scrollbarWidth + "px"}')
+    .column(ng-repeat='column in View.columns()' ng-style='{paddingTop: "2em", width: View.colWidth()}')
+      h3(ng-class='{"current-day": column.today}') {{column.title}}
+  .slider(ng-class='{grabbed: sliderGrabbed}' scroll='calendar-slider')
+    .card-content.skinny(ng-style='{height: (timeBlocks.length * View.gradeHeight + 2) + "em"}')
+      .vertical-timeline
+        div(ng-repeat='block in timeBlocks' ng-style='{height: View.gradeHeight + "em"}')
+          span.note-text {{block.hm}}
+      .slider-bg
+      .columns(ng-mouseenter='View.mouseInSlider = true' ng-mouseleave='View.mouseInSlider = false')
+        include current-time
+        .column(ng-repeat='column in View.columns()' ng-style='{paddingTop: "2em", width: View.colWidth()}')
+          .block(ng-repeat='block in timeBlocks' ng-style='{height: View.gradeHeight + "em"}')
+        include office-hrs
+        include time-off
+        include appointments
+        include new-appt-placeholder

@@ -1,0 +1,5 @@
+div.card-content
+  div.mtl.mbl.aligncenter(ng-if='data.finishedAppointments.length <= 0')
+    span.larger-text.subtle-text No appointments have finished yet.
+  div.dashboard-item(ng-repeat="appointment in data.finishedAppointments | orderBy:'startTime'" ng-class="{open: data.isAppointmentOpen == true && appointment == selectedAppointment, animated : data.isAppointmentAnimated && appointment == selectedAppointment}")
+    include ./profile

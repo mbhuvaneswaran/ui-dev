@@ -1,0 +1,26 @@
+.month-view.card(ng-if='View.view == View.MONTH' ng-controller='MonthViewCtrl')
+  .card-content.small-text
+    .left.mrm
+      #calendar-month-current.button(ng-click='goToCurrent()' ng-disabled='View.onCurrentTime') Current Month
+    .button-group.prev-next.left.mrm
+      .right
+        #calendar-month-prev.button(ng-click='View.update(View.tz.prevMonth().unix())') &#8592; {{prevMonth}}
+        #calendar-month-next.button(ng-click='View.update(View.tz.nextMonth().unix())') {{nextMonth}} &#8594;
+    #calendar-date.left.mrm.mlm.medium.base-text.date-picker-inactive.date-picker(type='text', datepicker='', readonly='',  datepicker-model='dateInfo', format='dddd, MMM DD, YYYY', onselect='goToCalendarMonth()', ng-blur='onBlurHandler()')
+      | {{dateInfo}}
+  .card-content.skinny
+    #dbg16.month-column(ng-repeat='col in dayColumns')
+      h3.month-column-header {{col.name}}
+      #dbg17.month-column-day(ng-repeat='day in col.days' ng-class='{"current-day": day.today, "out-of-month": (day.prevMonth || day.nextMonth), first: day.first}' ng-click='day.goToDay()' ng-show='day.show' track-click='calendar.interaction.month-drill-down-to-day')
+        h4.month-column-day-label {{day.date}}
+        h5.month-column-day-appts(ng-if='day.appts') {{day.appts}}
+          .month-column-day-appts-label
+            div(ng-if='day.appts == 1') Appointment
+            div(ng-if='day.appts != 1') Appointments
+        span.month-column-day-holiday.text-has-icon(ng-if='day.holidays')
+          i.flag
+          | {{day.holidays}}
+    div(ng-if='DailyApptCounts.pendingHttp')
+      .load-cover &nbsp;
+      .load-indicator
+        .display-inline.spinner

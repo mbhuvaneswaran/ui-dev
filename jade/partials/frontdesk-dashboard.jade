@@ -1,0 +1,44 @@
+#frontdesk-dashboard-container.container.dashboard
+  div(ng-controller='DashboardCacheCtrl')
+
+    .grid-12(ng-if='loadState.error')
+        .grid-6.offset-left-3.mtl.mbl
+            .grid-12.panel.warning.has-icon.pbl
+                i.ki.attention
+                .grid-12.mbl
+                    h3 Looks like we're having trouble connecting to your Kareo account.
+                    h4.nm Here are some things you can do to try to fix the problem:
+                    ul.alt-list
+                        li Try refreshing your web browser.
+                        li Try logging out of Kareo and logging back in.
+                        li
+                            | Check your internet connection, if it's down then the Kareo EHR won't be able to work.
+                        li If all else fails, take a break and try again later.
+                .grid-12.mbl
+                    h4.mbs You can also check out the Kareo Help Center
+                    a(href="http://www.kareo.com/help/ehr", target="_blank") View Kareo EHR Help Center &rarr;
+                .grid-12
+                    | We apologize for any inconvenience.
+
+    .grid-12(ng-if='!loadState.error')
+        include ../include/frontdesk-dashboard/topnav
+
+    .grid-12.wrapper(ng-if='!loadState.error')
+      .grid-8
+        include ../include/frontdesk-dashboard/mainview
+
+      .grid-4
+        outstanding-items
+          //- Per GAL-8003, Today's patient load widget should be removed until we
+            get the links for View/Print Agenda to start working.
+        tour-card(tour-name="notes", ng-if="showNotesTour && hasClinicalFeature()", show-tour="autoStartNotesTour", end-tour-callback="closeModal", start-tour-callback="openModal")
+        tour-card(tour-name="erx", ng-if="showErxCard && hasClinicalFeature()")
+        tour-card(tour-name="patientupload", ng-if="showPatientUploadCard")
+          //- include ../include/frontdesk-dashboard/widgets/patients-load-widget
+        .grid-12.card.marketing(ng-if='data.FeatureToggle.enabled.temp_dashboard_learn_more')
+            img.temp-help(src="./image/help.png")
+            .card-content
+                .grid-10.offset-left-1.mtm.mbm
+                    strong.large-text What's new with Kareo?
+                    p.note-text We rolled out some new features in Kareo EHR to help you run your practice better.
+                    a.cta.button(href='http://www.kareo.com/help/ehr/enhancements', target='_blank', track-click='dashboard.click.new-features-learn-more') Learn More

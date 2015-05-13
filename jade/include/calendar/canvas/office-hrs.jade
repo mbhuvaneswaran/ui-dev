@@ -1,0 +1,6 @@
+div(ng-controller='OfficeHoursCtrl')
+  .breaks
+    #dbg5.calendar-item.office-hour.time-off(ng-repeat='break in breaks' ng-style='break.style')
+      .mls.reason {{break.data.label}}
+  .office-hours
+    #dbg6.calendar-item.office-hour-item(ng-repeat='office_hr in office_hrs' ng-style='office_hr.style')

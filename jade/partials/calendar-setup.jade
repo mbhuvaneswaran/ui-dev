@@ -1,0 +1,24 @@
+div#calendar-setup-container(ng-controller='BootloaderCtrl')
+  div.container
+    div.grid-12.page-title.has-goback
+      h1 Calendar Settings
+
+  div.container(ng-controller='CalendarSetupCtrl')
+    div.grid-12
+      div#calendar-setup-content(ng-class="mainContainerClass")
+
+    div.grid-12.wrapper(style='right:{{offCanvas.wrapperOffset}}px;')
+      div.grid-3(sticky sticky-offset='50')
+        include ../include/calendar-setup/left-nav
+
+      div(ng-init='elasticMultiple=1' ng-class="{'grid-9': !offCanvas.shift, 'grid-8': offCanvas.shift }")
+        div(ng-if="view == 'general'")
+          include ../include/calendar-setup/views/general
+        div(ng-if="view == 'reasons'")
+          include ../include/calendar-setup/views/visit-reasons
+        div(ng-if="view == 'resources'")
+          include ../include/calendar-setup/views/resources
+        div(ng-if="view == 'office-hours'")
+          include ../include/calendar-setup/views/office-hours
+        div(ng-if="view == 'holidays'")
+          include ../include/calendar-setup/views/time-off-holidays

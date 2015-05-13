@@ -1,0 +1,22 @@
+div.grid-12.card#calendar-setup-visit-reasons(ng-controller='CalendarSetupAppointmentReasonCtrl')
+  div.card-header
+    div.left
+      h2 Visit Reasons
+    div.right
+      button.button.buttonlink.has-icon#new-visit-reason-button(ng-click='showCreateAppointmentReason(cardItems.visitReason)' focus-input='' focus-input-target='.editor-focus-target' focus-input-delay='600')
+        i.plus
+        span New Visit Reason
+
+  div.card-content.skinny
+    .grid-12.pbm.ptm.prm.plm(ng-show='data.appointmentReasons == 0')
+      span.note-text You don't have any appointment reasons.
+    ul.lined-link-list
+      li.scale-animation(ng-repeat="reason in data.appointmentReasons | orderBy:'name' | filter:{deleted:false}")
+        a(href='' focus-input='' focus-input-target='.editor-focus-target' focus-input-delay='600' ng-click='showEditAppointmentReason(cardItems.visitReason, reason)' ng-class="{selected: formData.id == reason.appointmentReasonId}")
+          span.indicator(style="background-color: {{reason.hexColor}}; display: inline-block; float: left")
+          span.mls {{reason.name}}
+          span.note-text.mls {{reason.duration}} mins
+
+.lightbox.open(ng-if="Modal.isModal( cardItems.visitReason.modal )")
+  .modal
+    include ../editor          

@@ -1,0 +1,21 @@
+.lightbox.open.base-text(ng-controller='EditAppt' ng-if='Modal.whichModal() == "moveAppt" || Modal.whichModal() == "resizeAppt"')
+  .container
+    .card.grid-8.offset-left-2
+      .card-header
+        h2 Appointment Update
+          span.mls.note-text ({{record.startTime().format("dddd, MMM D, h:mma")}})
+        a.close(href='' ng-click='cancel()') &times;
+
+      include confirm-save
+
+      .card-content(ng-if='record.recurringHead === null')
+        .spinner.primary.left
+        .left.mls Waiting for appointment data
+      .card-content(ng-if='data.patientSummary && record.recurringHead !== null')
+        button.primary.button(ng-disabled='form.submitted' ng-class='{disabled: form.submitted, "has-spinner": form.submitted}' ng-if='!record.data.deleted && patientApptsPriv' ng-click='save(createApptForm)')
+          .spinner(ng-if='form.submitted')
+          | Save
+        button.primary.button(ng-disabled='form.submitted' ng-class='{disabled: form.submitted, "has-spinner": form.submitted}' ng-if='record.data.deleted && patientApptsPriv' ng-click='delete')
+          .spinner(ng-if='form.submitted')
+          | Delete
+        button.buttonlink.button.subtle(ng-click='cancel()') Cancel

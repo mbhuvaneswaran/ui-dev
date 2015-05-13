@@ -1,0 +1,134 @@
+#edit-appt-modal.lightbox.open.base-text(ng-controller='EditAppt' ng-if='Modal.whichModal() == "createAppt" || Modal.whichModal() == "editAppt"')
+  .container
+    .card.grid-8.transitioned-5(ng-class="{'offset-left-2' : !Modal.offCanvasIsVisible() }")
+      .card-header
+        h2
+          span(ng-if='Modal.whichModal() == "createAppt"') New Appointment
+          span(ng-if='Modal.whichModal() == "editAppt" && !confirmSave') Edit Appointment
+          span(ng-if='Modal.whichModal() == "editAppt" && confirmSave') Confirm Changes
+          span.mls.note-text ({{record.startTime().format("dddd, MMM D, h:mma")}})
+        a.close(href='' ng-click='cancel()') &times;
+
+      .card-content(ng-show='!confirmSave', style='border-bottom:1px solid #ececee')
+        .grid-12
+          .input-group.nm(ng-hide='data.patientSummary')
+            label Enter Patient Name
+            input.appt-patient-search#appt-patient-srch.mbs(type='text' placeholder='Start typing a patient name...' focus-on='data.patientSummary' ng-model='nameSearch' patient-typeahead-search enter-key-function='selectPatient()')
+            .type-ahead-results(ng-if='!searching && nameSearch.length > 1')
+              ul.nav-list
+                li(ng-if='!searchError' ng-repeat='patient in searchedPatients | limitTo:resultMax')
+                  a(href='' ng-bind-html='patient._queried_name' ng-click='data.patientSummary = patient; rerender()' ng-class='{selected: patient.patientId == typeaheadSelectedPatient.patientId}')
+                li(ng-if='!searchError && !searchedPatients.length && nameSearch.length > 1')
+                  .mlm.subtle-text {{nameSearch}} was not found.
+                li(ng-if='searchError')
+                  .mlm.subtle-text An error occurred on the server. Please try again later.
+            .grid-12.spinner-message(ng-if='searching')
+              .spinner.primary.left
+              .left.mls Searching...
+
+          .grid-12(ng-if='data.patientSummary')
+            .input-group-nm
+              h3.nm.base-text {{record.name()}}
+                .button.buttonlink.small(ng-click='resetPatient()' ng-if='Modal.whichModal() == "createAppt"' focus-input='' focus-input-target='.appt-patient-search') Change Patient
+                a.button.buttonlink.small(ng-click='viewPatientRecord( editForm )' ng-if='Modal.whichModal() == "editAppt"' href='') View Patient Record
+                .right.note-text(ng-if='Modal.whichModal() == "editAppt"') {{ ApptStatus[record.data.appointmentStatus] }}
+            .inline.small.mn.input-group.plm
+              .input-group-item
+                .input-group-item-cell
+                  label DOB
+                .input-group-item-cell.patient-info {{record.data.patientSummary.dateOfBirth | age}}
+            .inline.small.mn.input-group.plm
+              .input-group-item
+                .input-group-item-cell
+                  label {{getPhoneLabel()}}
+                .input-group-item-cell.patient-info {{getPatientPreferredPhoneNo() | telephone}}
+            .inline.small.mn.input-group.plm(ng-show='pmEnabled && form.loadingAmounts != "error" && features["dark-feature.patient-tx-detail"]')
+              .mls.spinner.primary(ng-show='form.loadingAmounts')
+              .input-group-item(ng-show='!form.loadingAmounts')
+                .input-group-item-cell
+                  label
+                    | {{ ( form.balanceAmount || 0 ) >= 0 ? 'Balance' : 'Credit'}}
+                .input-group-item-cell.patient-info
+                  span(ng-class='{"success-text": form.balanceAmount < 0, "urgent-text": form.balanceAmount > 0}')
+                    | {{form.balanceAmount | currencyStrip}}
+      .card-content(ng-if='Modal.whichModal() == "createAppt" && !data.patientSummary && patientDemoPriv')
+        .left.mrs
+            button.button.has-icon(ng-click="createNewPatient()")
+                i.ki.plus
+                | Create New Patient
+
+      form#create-appointment-form(novalidate='' name='createApptForm' ng-if='data.patientSummary')
+        .grid-12(ng-show='!confirmSave' ng-init='cacheForm( createApptForm )')
+          .card-content
+            h4.mbs Appointment Details
+            div.grid-12.well.mbm
+              include forms/edit-appt-form
+
+          .card-content(ng-init='findConflicts()')
+            button.left.primary.button(ng-disabled='form.servicesubmitted' ng-class='{disabled: form.servicesubmitted, "has-spinner": form.servicesubmitted}' ng-click='save(createApptForm)' ng-if='Modal.whichModal() == "createAppt" && patientApptsPriv')
+              .spinner(ng-if='form.servicesubmitted')
+              span Make Appointment
+            button.left.primary.button(ng-disabled='form.servicesubmitted' ng-class='{disabled: form.servicesubmitted, "has-spinner": form.servicesubmitted}' ng-click='save(createApptForm)' ng-if='Modal.whichModal() == "editAppt" && !record.saved.recurring && patientApptsPriv')
+              .spinner(ng-if='form.servicesubmitted')
+              span Save Appointment
+            button.left.primary.button(ng-disabled='form.servicesubmitted' ng-class='{disabled: form.servicesubmitted, "has-spinner": form.servicesubmitted}' ng-click='showConfirmed(createApptForm)' ng-if='Modal.whichModal() == "editAppt" && record.saved.recurring && patientApptsPriv')
+              .spinner(ng-if='form.servicesubmitted')
+              span Save Appointment
+            .left.dropup.mlm.left(ng-if='Modal.whichModal() == "editAppt" && patientApptsPriv')
+              .button.buttonlink.subtle(ng-click='visit.apptOptions = !visit.apptOptions') More Options
+              include more-options-dropdown
+            .left.buttonlink.button.subtle(ng-click='cancel()') Cancel
+
+            div.right.mts(ng-if='loadingConflicts')
+              .primary.spinner
+            div.right(ng-if='!loadingConflicts')
+              span(ng-if='!hasConflicts && !hasNonApptConflicts').small-text.mts.right.text-has-icon
+                i.ki.success-text.check
+                span No Scheduling Conflicts
+              span(ng-if='( hasConflicts || hasNonApptConflicts )' ng-click='Modal.showOffCanvas()' track-click='appointment.click.view-conflicts').small.right.mts.buttonlink.warning.push-button.button.has-icon
+                i.ki.attention
+                span View Scheduling Conflicts
+
+        .grid-12(ng-if='confirmSave')
+          div(ng-if='!record.changed("deleted")')
+            include confirm-save.jade
+          div(ng-if='!!record.changed("deleted")')
+            include confirm-delete.jade
+
+          .card-content(ng-if='record.recurringHead === null')
+            .spinner.primary.left
+            .left.mls Waiting for appointment data
+          .card-content(ng-init='findConflicts() && record.recurringHead !== null')
+            button.primary.button(ng-click='save(createApptForm)' ng-if='!record.data.deleted')
+              span Confirm Changes
+            button.urgent.button.has-icon(ng-click='delete(createApptForm)' ng-if='record.data.deleted')
+              i.ki.trash
+              span Delete
+            button.buttonlink.button.subtle(ng-click='cancel()') Cancel
+
+    .grid-4.nm.modal-off-canvas(ng-if="Modal.offCanvasIsVisible()" ng-class="{'show':Modal.offCanvasCompleted()}")
+      .card.grid-12
+        .card-header
+          h2 Conflicts
+          a.close(href='' ng-click='Modal.hideOffCanvas()') &times;
+        .card-content(ng-if='hasConflicts')
+          div(ng-if='hasConflicts && conflicts.length > 0')
+            h3.base-text.mbs Patient Appointment Conflicts
+            .well
+              ul.nolist
+                li(ng-repeat='conflict in conflicts')
+                  strong {{ conflict.name() }}
+                  span : {{ conflict.startTime().format('MM/DD/YYYY') }} at {{ conflict.startTime().format('h:mma') }}
+
+          div(ng-if='hasNonApptConflicts')
+            h3.base-text.mbs Other Possible Conflicts
+            .well
+              ul(ng-if='hasNonApptConflicts')
+                li(ng-if='ApptConflict.outsideOfficeHours') This appointment falls outside of normal office hours for this provider.
+                li(ng-if='ApptConflict.onHoliday') This appointment falls on a holiday for this provider.
+                li(ng-if='ApptConflict.onBreak') This appointment falls on a normal break for this provider.
+                li(ng-if='ApptConflict.onTimeOff') This appointment falls on time off for this provider.
+
+
+        .card-content(ng-if='!hasConflicts')
+          h4 No Conflicts Found

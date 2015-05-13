@@ -1,0 +1,14 @@
+div.card#patient-load-widget(ng-controller='PatientLoadCtrl')
+  div.card-header
+    h2 Today's Patient Load
+      span.note-text  ({{ getTotalLoad() }} Total)
+  div.card-content
+    ul.nolist.spaced
+      li(ng-repeat="provider in data.providers | orderBy:['firstName', 'lastName']" ng-if='getProviderLoad(data.appointments, provider, data.currentLocation).length > 0')
+        div.mls
+          div.left {{provider.firstName}} {{provider.lastName}}
+          span.left.indicator
+            span.small-text {{ getProviderLoad(data.appointments, provider, data.currentLocation).length }}
+        div.grid-12
+          a.small.button.buttonlink(href='') View Agenda
+          a.small.button.buttonlink(href='') Print Agenda

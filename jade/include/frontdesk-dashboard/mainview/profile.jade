@@ -1,0 +1,57 @@
+.grid-12.dashboard-item-header(ng-click='togglePatientDropdown(appointment)' ng-show='!appointment.isHidden' id="{{ 'appt-' + appointment.profileData.displayId }}")
+  .grid-1(ng-if='isPatientPhotoEnabled()')
+    img.patient-photo.basic(ng-attr-src='api/Patient/{{ appointment.patientSummary.patientId }}/Photo/Img64' onerror='this.onerror=null;this.src="image/empty-profile-xs.png"')
+  .grid-8
+    h3.lhr.nm 
+      span(style='text-transform:capitalize;') {{ appointment.patientSummary.firstName.toLowerCase() }} {{ appointment.patientSummary.lastName.toLowerCase() }}
+      span.mlm.mrs.note-text {{appointment.patientSummary.yearsOfAge}} y/o
+      span.note-text(ng-if='appointment.patientSummary.genderId == gender.FEMALE') Female
+      span.note-text(ng-if='appointment.patientSummary.genderId == gender.MALE') Male
+    span.base-text(ng-class='{truncate : selectedAppointment != appointment}' ng-if='appointment.provider') {{ appointment.profileData.startTimeShort }} &middot; {{ appointment.appointmentReason.name }} with {{ appointment.provider.firstName }} {{ appointment.provider.lastName }}
+    span.base-text(ng-class='{truncate : selectedAppointment != appointment}' ng-if='appointment.resource && !appointment.provider') {{ appointment.profileData.startTimeShort }} &middot; {{ appointment.appointmentReason.name }} with {{ appointment.resource.resourceName }}
+    .base-text(ng-if='showProfileDebugPanel') recId : {{ appointment.occurrenceId || "No Recurrence" }} || gender : {{ appointment.patientSummary.genderId }} || apptId : {{appointment.appointmentId}} || resIds : {{ appointment.resourceIds }} || patId : {{appointment.patientSummary.patientId}}
+  
+  .grid-3.aligncenter(ng-if='!appointmentHasState(appointment.appointmentStatus, appointmentState.SCHEDULED)' ng-class="{ 'offset-left-1' : !isPatientPhotoEnabled() }")
+    .grid-12(ng-if='appointmentHasState(appointment.appointmentStatus, appointmentStatus.CHECKED_IN) && currentView == "inOffice" ')
+      .status-indicator(ng-class="{ primary : appointment.profileData.startTime.valueOf() >= time.now.valueOf(), urgent : appointment.profileData.startTime.valueOf() < time.now.valueOf() }")
+        span.status-name.full-width Arrived
+
+    .grid-12(ng-if='appointmentHasState(appointment.appointmentStatus, appointmentStatus.READY_TO_BE_SEEN) && currentView == "inOffice" ')
+      .status-indicator(ng-class="{ primary : appointment.profileData.startTime.valueOf() >= time.now.valueOf(), urgent : appointment.profileData.startTime.valueOf() < time.now.valueOf() }")
+        span.status-name.full-width Waiting For Appt
+
+    .grid-12(ng-if='appointmentHasState(appointment.appointmentStatus, appointmentStatus.ROOMED) && currentView == "inOffice" ')
+      .status-indicator.warning
+        span.status-name.full-width Roomed
+      .small-text.truncate
+        span(ng-repeat='resource in getAppointmentResources(appointment.resourceIds)') {{ resource.resourceName }}
+
+    .grid-12(ng-if='appointmentHasState(appointment.appointmentStatus, appointmentStatus.CHECKED_OUT) && currentView == "finished" ')
+      .status-indicator.success
+        span.status-name.full-width Checked Out
+        span.status-label.hide Visit took {{ formattedAppointmentTime(appointment.profileData.startTime, appointment.profileData.endTime) }}
+
+    .grid-12(ng-if='appointmentHasState(appointment.appointmentStatus, appointmentStatus.CANCELLED) && currentView == "finished"')
+      .status-indicator.urgent
+        span.status-name.full-width Cancelled
+
+    .grid-12(ng-if='appointmentHasState(appointment.appointmentStatus, appointmentStatus.RESCHEDULED) && currentView == "finished"')
+      .status-indicator.urgent
+        span.status-name.full-width Rescheduled
+
+    .grid-12(ng-if='appointmentHasState(appointment.appointmentStatus, appointmentStatus.NO_SHOW) && currentView == "finished"')
+      .status-indicator.urgent
+        span.status-name.full-width No Show
+
+  .grid-3.aligncenter(ng-if='appointmentHasState(appointment.appointmentStatus, appointmentState.SCHEDULED) && currentView == "upcoming" && time.isToday ' ng-class="{ 'offset-left-1' : !isPatientPhotoEnabled() }")
+    div(ng-if='appointment.profileData.startTime.valueOf() < time.now.valueOf()')
+      .label.mbs.small-text.urgent {{ formattedAppointmentTime(appointment.profileData.startTime, time.now) }} late
+    div(ng-if='appointment.profileData.startTime.valueOf() >= time.now.valueOf()')
+      .label.mbs.small-text.primary(ng-class="{ 'grade-3' : !appointment.profileData.needsExtraGrade }") Appt in {{ formattedAppointmentTime(appointment.profileData.startTime, time.now) }}
+
+    .small-text(ng-if='appointmentHasState(appointment.appointmentStatus, appointmentStatus.CONFIRMED)') Confirmed
+    .small-text(ng-if='appointmentHasState(appointment.appointmentStatus, appointmentStatus.REMINDER_SENT)') Reminder Sent
+
+
+div.grid-12.inner-profile-container(ng-if='appointment == selectedAppointment')
+  include profile-dropdown

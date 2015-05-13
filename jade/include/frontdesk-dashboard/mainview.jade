@@ -1,0 +1,29 @@
+div.grid-12.card#frontdesk-dashboard-container
+  div.card-content(ng-if='data.preDataLoad')
+    .loading.big-load
+      .loading-content
+        .primary.spinner
+
+  div(ng-if='!data.preDataLoad')
+    div.card-content
+      ul.dashboard-buckets.three-buckets.small-text.lined-link-list#dashboard-buckets
+        li
+          a(href='' ng-click='changeView("upcoming")' ng-class='{ selected : currentView == "upcoming", highlight : bucketScheduledBlink }')
+            span.large-text.ng-binding {{ data.scheduledAppointments.length }}
+            div Scheduled
+        li
+          a(href='' ng-click='changeView("inOffice")' ng-class='{ selected : currentView == "inOffice", highlight : bucketInOfficeBlink }')
+            span.large-text {{ data.inOfficeAppointments.length }}
+            div In Office
+        li
+          a(href='' ng-click='changeView("finished")' ng-class='{ selected : currentView == "finished", highlight : bucketFinishedBlink }')
+            span.large-text {{ data.finishedAppointments.length }}
+            div Finished
+
+    div#mainview(ng-controller='AppointmentStateCtrl')
+      div(ng-if="currentView == 'upcoming'")
+        include mainview/scheduled-appointments-view
+      div(ng-if="currentView == 'inOffice'")
+        include mainview/in-office-view
+      div(ng-if="currentView == 'finished'")
+        include mainview/finished-view

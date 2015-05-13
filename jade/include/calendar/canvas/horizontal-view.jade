@@ -1,0 +1,32 @@
+.day-view.small-text.card(resizable ng-if='View.type == View.HORIZONTAL')
+  .card-content
+    include toolbar
+    #calendar-date.left.mrm.mlm.medium.base-text.date-picker-inactive.date-picker(type='text', datepicker='', readonly='',  datepicker-model='$parent.dateInfo', format='dddd, MMM DD, YYYY', onselect='goToCalendarDate()', ng-blur='onBlurHandler()')
+        | {{$parent.dateInfo}}
+    include zoom-buttons
+  .card-content.body
+    .stalled
+      .provider(ng-repeat='provider in Pros.withResources()' ng-show='provider.visible' ng-style='provider.style' id='calendar-provider-{{provider.xid}}')
+        .boundaries
+        .last-name.truncate(ng-if='!provider.data.resourceTypeId') {{provider.data.lastName}}
+          span.narrow ,
+        .first-name.truncate(ng-if='!provider.data.resourceTypeId') {{provider.data.firstName}}
+        .first-name.truncate(ng-if='provider.data.resourceTypeId') {{provider.name()}}
+    .slider-frame(ng-mouseenter='View.mouseInSlider = true' ng-mouseleave='View.mouseInSlider = false')
+      .slider(ng-class='{grabbed: sliderGrabbed}')
+        .slider-bg
+        .grades(ng-controller='GradesCtrl')
+          #dbg3.grade(ng-repeat='grade in grades' ng-style='grade')
+          .time-caps
+            #dbg4.time-cap(ng-repeat='tcap in timeCaps' ng-style='tcap.style') {{tcap.t}}
+        include current-time
+        include appointments
+        include time-off
+        include office-hrs
+        include new-appt-placeholder
+      .arrow.left.left-gradient(ng-click='scrollLeft()' ng-mouseenter='View.arrowHover = 1' ng-mouseleave='View.arrowHover = null' track-click='calendar.interaction.daily-horizontal-scroll-left')
+        .aligner
+          #calendar-day-scroll-left &#9664;
+      .arrow.right.right-gradient(ng-click='scrollRight()' ng-mouseenter='View.arrowHover = 2' ng-mouseleave='View.arrowHover = null' track-click='calendar.interaction.daily-horizontal-scroll-right')
+        .aligner
+          #calendar-day-scroll-right &#9654;

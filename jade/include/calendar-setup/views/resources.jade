@@ -1,0 +1,57 @@
+div#calendar-setup-resources(ng-controller='CalendarSetupResourceCtrl')
+  div(ng-if='featuresLoaded')
+
+    //- ROOMS
+    div.grid-12.card
+      div.card-header
+        div.left
+          h2 Rooms
+        div.left(ng-if='nonProviderFeaturesToggled')
+          a.button.buttonlink.has-icon(ng-click="Modal.open('helpRoomsModal')")
+            i.ki.question-alt
+        div.right
+          button.button.buttonlink.has-icon#new-room-button(ng-click='showCreateResource(cardItems.room)' focus-input='' focus-input-target='.editor-focus-target' focus-input-delay='600')
+            i.plus
+            span New Room
+
+      div.card-content.skinny
+        .grid-12.ptm.pbm.prm.plm(ng-show='data.rooms.length == 0')
+          span.note-text There are no rooms set up. 
+          a.button.small.buttonlink.has-icon#new-room-button(ng-click='showCreateResource(cardItems.room)' focus-input='' focus-input-target='.editor-focus-target' focus-input-delay='600')
+        ul.lined-link-list
+          li.scale-animation(ng-repeat="resource in data.rooms | orderBy:'resourceName' | filter:{deleted:false}")
+            a(href='' focus-input='' focus-input-target='.editor-focus-target' focus-input-delay='600' ng-click='showEditResource(cardItems.room, resource)' ng-class="{selected: formData.id == resource.resourceId}")
+              span.mls {{resource.resourceName}}
+
+    //- EQUIPMENT
+    div.grid-12.card(ng-if='equipmentEnabled')
+      div.card-header
+        div.left
+          h2 Equipment
+        div.left(ng-if='nonProviderFeaturesToggled')
+          a.button.buttonlink.has-icon(ng-click="Modal.open('helpEquipmentModal')")
+            i.ki.question-alt
+        div.right
+          button.button.buttonlink.has-icon#new-equipment-button(ng-click='showCreateResource(cardItems.equipment)' focus-input='' focus-input-target='.editor-focus-target' focus-input-delay='600')
+            i.plus
+            span New Equipment
+
+      div.card-content.skinny
+        .grid-12.ptm.pbm.prm.plm(ng-show='data.equipment.length == 0')
+          span.note-text There is no equipment set up. 
+          a.button.small.buttonlink.has-icon#new-room-button(ng-click='showCreateResource(cardItems.equipment)' focus-input='' focus-input-target='.editor-focus-target' focus-input-delay='600')
+        ul.lined-link-list
+          li.scale-animation(ng-repeat="resource in data.equipment | orderBy:'resourceName' | filter:{deleted:false}")
+            a(href='' focus-input='' focus-input-target='.editor-focus-target' focus-input-delay='600' ng-click='showEditResource(cardItems.equipment, resource)' ng-class="{selected: formData.id == resource.resourceId}")
+              span.mls {{resource.resourceName}}
+
+
+.lightbox.open(ng-if="Modal.isModal( cardItems.room.modal )")
+  .modal
+    include ../editor
+
+.lightbox.open(ng-if="Modal.isModal( 'helpRoomsModal' )")
+    include ./help_modals/rooms
+
+.lightbox.open(ng-if="Modal.isModal( 'helpEquipmentModal' )")
+    include ./help_modals/equipment

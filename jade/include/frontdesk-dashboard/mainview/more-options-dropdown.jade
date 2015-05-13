@@ -1,0 +1,38 @@
+div.righty.dropdown(style='position:relative; z-index:30;' ng-show='!data.loading')
+  a.button.buttonlink.subtle More Options
+  ul.dropdown-list.small(ng-click="setCurrentLoader('optionsdropdown')")
+    li
+      a(href='' ng-click='changeAppointmentState(appointment, appointmentStatus.CHECKED_IN);' track-click='dashboard.click.more-options-arrived') Mark as Arrived
+    li
+      a(href='' ng-click='changeAppointmentState(appointment, appointmentStatus.READY_TO_BE_SEEN)' track-click='dashboard.click.more-options-ready') Mark as Ready
+    li(ng-if='data.rooms.length > 0')
+      a(href='' ng-class='{selected : profileRoomDropdownActive}' ng-mouseenter='profileRoomDropdownActive = true' ng-mouseleave='profileRoomDropdownActive = false') Room &rarr;
+      ul.sub-dropdown-list.scrolly(ng-show='profileRoomDropdownActive' ng-mouseenter='profileRoomDropdownActive = true' ng-mouseleave='profileRoomDropdownActive = false')
+        li(ng-repeat="room in data.rooms | orderBy:'resourceName'")
+          a(href='' ng-click='selectAppointmentRoom(appointment, room)' track-click='dashboard.click.more-options-room' track-properties='{ "specific-room" : true }') {{room.resourceName}}
+    li(ng-if='data.rooms.length <= 0')
+      a(href='' ng-click='changeAppointmentState(appointment, appointmentStatus.ROOMED)' track-click='dashboard.click.more-options-room' track-properties='{ "specific-room" : false }') Mark as Roomed
+    li
+      a(href='' ng-click='changeAppointmentState(appointment, appointmentStatus.CHECKED_OUT)') Checkout
+    li.divide
+    li
+      a(href='' ng-click='changeAppointmentState(appointment, appointmentStatus.NO_SHOW)' track-click='dashboard.click.more-options-no-show') Mark as No Show
+    li
+      a(href='' ng-click='changeAppointmentState(appointment, appointmentStatus.RESCHEDULED)' track-click='dashboard.click.more-options-rescheduled') Mark as Rescheduled
+    li
+      a(href='' ng-click='changeAppointmentState(appointment, appointmentStatus.CANCELLED)' track-click='dashboard.click.more-options-cancel') Cancel Appointment
+    li.divide
+    li
+      a(href='' ng-click='changeAppointmentState(appointment, appointmentStatus.SCHEDULED)' track-click='dashboard.click.more-options-scheduled') Mark as Scheduled
+    li
+      a(href='' ng-click='changeAppointmentState(appointment, appointmentStatus.REMINDER_SENT)' track-click='dashboard.click.more-options-reminder-sent') Mark as Reminder Sent
+    li
+      a(href='' ng-click='changeAppointmentState(appointment, appointmentStatus.CONFIRMED)' track-click='dashboard.click.more-options-confirmed') Mark as Confirmed
+    li.divide(ng-show='data.practice.pmenabled')
+    li(ng-show='data.practice.pmenabled')
+      a(ng-href='{{ urlFor.patientPaymentLink(appointment.patientSummary.patientId, appointment.appointmentId) }}') Collect Payment →
+
+div.righty(ng-show='data.loading')
+  a.button.mrs.disabled(ng-class="{'has-spinner': data.currentLoader == 'optionsdropdown'}")
+    span.small.spinner(ng-show="data.currentLoader == 'optionsdropdown'")
+    span More Options

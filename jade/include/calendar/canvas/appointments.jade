@@ -1,0 +1,24 @@
+.appointments(ng-controller='AppointmentsCtrl')
+  .calendar-item(ng-repeat='appt in appts' id='calendar-appt-{{appt.id}}' ng-style='appt.style' ng-mouseenter='hover(appt)' ng-mouseleave='hover()'
+                 ng-class='{cancelled: appt.cancelled, condensed: (appt.levels || appt.condensed), grabbed: appt.grabbed, pseudo: appt.id == "pseudo", resizing: appt.resizing, edited: appt.edited, "small-calendar-item": appt.smallItem, "torn-bottom": View.type == View.VERTICAL && appt.tornEnd, "torn-right": View.type == View.HORIZONTAL && appt.tornEnd, "torn-top": View.type == View.VERTICAL && appt.tornStart, "torn-left": View.type == View.HORIZONTAL && appt.tornStart, tentative: appt.data.appointmentStatus == 12}')
+    .calendar-item-content(ng-class="{ 'cancelled' : appt.cancelled || appt.rescheduled }")
+      .name-reason-wrapper
+        .last-name {{appt.data.patientSummary.lastName}}
+          span(ng-if='appt.data.patientSummary.lastName').narrow ,
+        .first-name.mrs {{appt.data.patientSummary.firstName}}
+        .reason(ng-class="{ 'cancelled' : appt.cancelled || appt.rescheduled }") {{appt.reason().data.name}}
+      .status-recurring-wrapper
+        .status
+          i.ki.error(ng-if='appt.cancelled')
+          i.ki.inoffice(ng-if='appt.statusClass == "inOffice"')
+          i.ki.check-alt(ng-if='appt.statusClass == "completed"')
+          i.ki.reschedule(ng-if='appt.statusClass == "rescheduled"')
+          //- i.ki(ng-style='{color: appt.style.borderLeftColor}' ng-class='appt.statusClass')
+        .recurring(ng-if='appt.data.recurring')
+          i.redo
+    .resizer-bottom(ng-if='appt.data.appointmentStatus != 12 && !appt._origAppt && View.type == View.VERTICAL'   ng-mouseenter='hoverResizer(appt, "bottom")' ng-mouseleave='hoverResizer()')
+    .resizer-left(  ng-if='appt.data.appointmentStatus != 12 && !appt._origAppt && View.type == View.HORIZONTAL' ng-mouseenter='hoverResizer(appt, "left")'   ng-mouseleave='hoverResizer()')
+    .resizer-right( ng-if='appt.data.appointmentStatus != 12 && !appt._origAppt && View.type == View.HORIZONTAL' ng-mouseenter='hoverResizer(appt, "right")'  ng-mouseleave='hoverResizer()')
+    .resizer-top(   ng-if='appt.data.appointmentStatus != 12 && !appt._origAppt && View.type == View.VERTICAL'   ng-mouseenter='hoverResizer(appt, "top")'    ng-mouseleave='hoverResizer()')
+    .time(ng-if='!appt._origAppt && appt.grabbed') &#9666; {{appt.startTime().format("h:mma")}}
+    .length(ng-if='!appt._origAppt && appt.resizing') {{minuteLength(appt)}} &#9656;

@@ -1,0 +1,21 @@
+div.grid-12.card#general-settings(ng-controller='CalendarSetupGeneralCtrl')
+  div.card-header
+    div.left
+      h2 General
+
+  div.card-content
+    div.input-group
+      label Time Zone
+      select#tz-chooser.medium(ng-change='save(tz_name)' ng-model='form.timezone' ng-options='timezone.data.timeZone as timezone.data.timeZoneDisplayLabel group by timezone.data.groupNameLabel for timezone in timezones')
+      p.note-text This is the time zone your practice calendar will always be shown in.
+
+  div.card-content
+    div.input-group
+      label Calendar Increment
+      select#dur-chooser.medium(ng-change='save(duration_name)' ng-model='form.duration' ng-options='duration for duration in durationSlots')
+      p.note-text This is the smallest block of time you can create appointments for.
+
+  div.card-content(ng-if='saving')
+    .right.mls Saving...
+    .right.spinner
+    

@@ -1,0 +1,13 @@
+.well(ng-if='!!record.data.recurring && !!record.saved.recurring')
+  p.nm
+    | Do you want to change 
+    strong only this occurrence
+    |  or 
+    strong update the entire series
+    | ?
+  .mtm.checkbox
+    input(type='radio' name='series' ng-model='form.series' value='occurrence' id='occurrence')
+    label(for='occurrence') Only this occurrence
+  .checkbox
+    input(type='radio' name='series' ng-model='form.series' value='series' id='series')
+    label(for='series') Update the entire series

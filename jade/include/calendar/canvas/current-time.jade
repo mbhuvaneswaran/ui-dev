@@ -1,0 +1,6 @@
+.current-time(ng-controller='CurrentTimeCtrl')
+  div(ng-if='show')
+    .cap(ng-style='capStyle' ng-if='showCap')
+      span#cur-time {{time}}
+    #cur-time-line.line(ng-style='lineStyle')
+    .now-marker(ng-style='arrowStyle' ng-if='!showCap')

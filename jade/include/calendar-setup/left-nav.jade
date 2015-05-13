@@ -1,0 +1,14 @@
+div.grid-12.card#calendar-setup-leftnav
+  div.card-content
+    ul.lined-link-list.small-text
+      li#calendar-setup-leftnav-visit-reason-link
+        a(href='' ng-click="changeView('general')") General
+      li#calendar-setup-leftnav-visit-reason-link
+        a(href='' ng-click="changeView('reasons')") Visit Reasons
+      li#calendar-setup-leftnav-visit-resources-link
+        a(href='' ng-click="changeView('resources')" ng-if='!nonProviderFeaturesToggled') Rooms
+        a(href='' ng-click="changeView('resources')" ng-if='nonProviderFeaturesToggled') Rooms & Equipment
+      li#calendar-setup-leftnav-office-hours-link
+        a(href='' ng-click="changeView('office-hours')") Office Hours
+      li#calendar-setup-leftnav-holidays-link
+        a(href='' ng-click="changeView('holidays')") Time Off & Holidays

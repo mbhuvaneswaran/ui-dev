@@ -1,0 +1,5 @@
+div.card-content
+  div.mtl.mbl.aligncenter(ng-if='data.inOfficeAppointments.length <= 0')
+    span.larger-text.subtle-text No patients are currently in the office.
+  div.dashboard-item(ng-repeat="appointment in data.inOfficeAppointments" ng-class="{open: data.isAppointmentOpen == true && appointment == selectedAppointment, animated : data.isAppointmentAnimated && appointment == selectedAppointment}")
+    include ./profile

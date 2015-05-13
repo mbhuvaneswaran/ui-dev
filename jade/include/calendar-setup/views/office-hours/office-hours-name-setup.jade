@@ -1,0 +1,9 @@
+.card(ng-if="isStaffMember == true")
+    .card-header
+        h2(ng-if="targetId === 0") Enter Staff Name
+        h2(ng-if="targetId") Staff Name
+    .card-content
+        .grid-12
+            .input-group.nm
+                label Enter Staff name
+                input(type='text', ng-model="resource.data.resourceName" placeholder="New Staff Name")

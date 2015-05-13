@@ -1,0 +1,23 @@
+.container(ng-controller='BootloaderCtrl')
+    .page-title.grid-8.offset-left-2
+        a.left.mtm.mrs.button.buttonlink.has-icon.subtle.small(ng-click='backToSetup()')
+            i.ki.goback
+            | Back
+        h1 Office Hours - {{ resource.data.resourceName }}
+    .grid-8.offset-left-2
+        include ../../include/calendar-setup/views/office-hours/office-hours-name-setup
+        include ../../include/calendar-setup/views/office-hours/office-hours-setup
+    div.grid-12
+        div.dark.card.grid-12.action-bar
+            div.card-content
+                div.container
+                    div.grid-8.offset-left-2
+                        div.left
+                            a.primary.button(ng-click='updateOfficeHours()', ng-disabled='workStatus.invalid') Save & Finish
+                            a.button.buttonlink(ng-click='backToSetup()' track-click='calendar-settings.click.office-hours-cancel') Cancel
+                        div#saved.mlm.left.success-text(style='display:none;')
+                            span.text-has-icon
+                                i.check
+                                | Saved
+                div.grid-12.hide.mts
+                    span.mls.smaller-text Save Hotkey: CMD + Enter

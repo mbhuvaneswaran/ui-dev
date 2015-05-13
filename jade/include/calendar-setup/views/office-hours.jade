@@ -1,0 +1,7 @@
+
+.grid-12(ng-controller='CalendarOfficeHoursCtrl')
+  include ./office-hours/providers
+
+  div(ng-if='staff_enabled')
+    include ./office-hours/staff
+

@@ -1,0 +1,16 @@
+form#confirm-delete-form(name='confirmDeleteForm' novalidate='')
+  div.card-content
+    div.panel.error.has-icon(ng-if='formData.submissionError.length > 0')
+      i.attention {{formData.submissionError}}
+
+    div.grid-6.offset-left-3.mt1.mb1.aligncenter Are you sure you want to remove
+      p
+        strong {{ formData.name }}
+      span  from your {{ editorCard.title }} list?
+
+  div.card-content
+    div.left
+      button.button.urgent.has-icon#editor-submit-delete(type="submit" value="Remove" ng-click="submit(editorCard, formData, confirmDeleteForm)")
+        i.trash
+        span Remove
+      button.button.buttonlink.subtle(ng-click="cancelDelete(formData)") Cancel

@@ -1,0 +1,16 @@
+div.card.grid-12
+  div.card-header
+    h2 {{editor.title}}
+    a.close(ng-click='Modal.close()') ×
+
+  div(ng-if="view == 'reasons'" ng-controller='CalendarSetupAppointmentReasonCtrl')
+    div(ng-if="!confirmRemove")
+      include ./forms/reason-form
+    div(ng-if='confirmRemove')
+      include ./forms/confirm-remove-form
+        
+  div(ng-if="view == 'resources'" ng-controller='CalendarSetupResourceCtrl')
+    div(ng-if='!confirmRemove')
+      include ./forms/resource-form
+    div(ng-if='confirmRemove')
+      include ./forms/confirm-remove-form
